@@ -1,0 +1,25 @@
+{
+  "input": "iam-api.yaml",
+  "patches": [
+    {
+      "type": "remove-format",
+      "format": "email"
+    },
+    {
+      "type": "remove-format",
+      "format": "uri"
+    },
+    {
+      "type": "add-format",
+      "format": "int64",
+      "namePattern": "^(id|.*_id)$",
+      "targetType": "integer"
+    },
+    {
+      "type": "add-format",
+      "format": "date-time",
+      "namePattern": ".*_at$",
+      "targetType": "string"
+    }
+  ]
+}

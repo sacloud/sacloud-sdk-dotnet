@@ -1,0 +1,160 @@
+<Solution>
+  <Folder Name="/sdk/" />
+  <Folder Name="/sdk/AddOn/" />
+  <Folder Name="/sdk/AddOn/samples/">
+    <Project Path="sdk/AddOn/samples/AddOn.Samples.csproj" />
+  </Folder>
+  <Folder Name="/sdk/AddOn/src/">
+    <Project Path="sdk/AddOn/src/AddOn.csproj" />
+  </Folder>
+  <Folder Name="/sdk/AddOn/tests/">
+    <Project Path="sdk/AddOn/tests/AddOn.Tests.csproj" />
+  </Folder>
+  <Folder Name="/sdk/APIGateway/" />
+  <Folder Name="/sdk/APIGateway/samples/">
+    <Project Path="sdk/APIGateway/samples/APIGateway.Samples.csproj" />
+  </Folder>
+  <Folder Name="/sdk/APIGateway/src/">
+    <Project Path="sdk/APIGateway/src/APIGateway.csproj" />
+  </Folder>
+  <Folder Name="/sdk/APIGateway/tests/">
+    <Project Path="sdk/APIGateway/tests/APIGateway.Tests.csproj" />
+  </Folder>
+  <Folder Name="/sdk/AppRunDedicated/" />
+  <Folder Name="/sdk/AppRunDedicated/samples/">
+    <Project Path="sdk/AppRunDedicated/samples/AppRunDedicated.Samples.csproj" />
+  </Folder>
+  <Folder Name="/sdk/AppRunDedicated/src/">
+    <Project Path="sdk/AppRunDedicated/src/AppRunDedicated.csproj" />
+  </Folder>
+  <Folder Name="/sdk/AppRunDedicated/tests/">
+    <Project Path="sdk/AppRunDedicated/tests/AppRunDedicated.Tests.csproj" />
+  </Folder>
+  <Folder Name="/sdk/AppRunShared/" />
+  <Folder Name="/sdk/AppRunShared/samples/">
+    <Project Path="sdk/AppRunShared/samples/AppRunShared.Samples.csproj" />
+  </Folder>
+  <Folder Name="/sdk/AppRunShared/src/">
+    <Project Path="sdk/AppRunShared/src/AppRunShared.csproj" />
+  </Folder>
+  <Folder Name="/sdk/AppRunShared/tests/">
+    <Project Path="sdk/AppRunShared/tests/AppRunShared.Tests.csproj" />
+  </Folder>
+	<Folder Name="/sdk/CloudHSM/" />
+	<Folder Name="/sdk/CloudHSM/samples/">
+		<Project Path="sdk/CloudHSM/samples/CloudHSM.Samples.csproj" />
+	</Folder>
+	<Folder Name="/sdk/CloudHSM/src/">
+		<Project Path="sdk/CloudHSM/src/CloudHSM.csproj" />
+	</Folder>
+	<Folder Name="/sdk/CloudHSM/tests/">
+		<Project Path="sdk/CloudHSM/tests/CloudHSM.Tests.csproj" />
+	</Folder>
+  <Folder Name="/sdk/EventBus/" />
+  <Folder Name="/sdk/EventBus/samples/">
+    <Project Path="sdk/EventBus/samples/EventBus.Samples.csproj" />
+  </Folder>
+  <Folder Name="/sdk/EventBus/src/">
+    <Project Path="sdk/EventBus/src/EventBus.csproj" />
+  </Folder>
+  <Folder Name="/sdk/EventBus/tests/">
+    <Project Path="sdk/EventBus/tests/EventBus.Tests.csproj" />
+  </Folder>
+  <Folder Name="/sdk/IAM/" />
+  <Folder Name="/sdk/IAM/samples/">
+    <Project Path="sdk/IAM/samples/IAM.Samples.csproj" />
+  </Folder>
+  <Folder Name="/sdk/IAM/src/">
+    <Project Path="sdk/IAM/src/IAM.csproj" />
+  </Folder>
+  <Folder Name="/sdk/IAM/tests/">
+    <Project Path="sdk/IAM/tests/IAM.Tests.csproj" />
+  </Folder>
+  <Folder Name="/sdk/KMS/" />
+  <Folder Name="/sdk/KMS/samples/">
+    <Project Path="sdk/KMS/samples/KMS.Samples.csproj" />
+  </Folder>
+  <Folder Name="/sdk/KMS/src/">
+    <Project Path="sdk/KMS/src/KMS.csproj" />
+  </Folder>
+  <Folder Name="/sdk/KMS/tests/">
+    <Project Path="sdk/KMS/tests/KMS.Tests.csproj" />
+  </Folder>
+  <Folder Name="/sdk/MonitoringSuite/" />
+  <Folder Name="/sdk/MonitoringSuite/samples/">
+    <Project Path="sdk/MonitoringSuite/samples/MonitoringSuite.Samples.csproj" />
+  </Folder>
+  <Folder Name="/sdk/MonitoringSuite/src/">
+    <Project Path="sdk/MonitoringSuite/src/MonitoringSuite.csproj" />
+  </Folder>
+  <Folder Name="/sdk/MonitoringSuite/tests/">
+    <Project Path="sdk/MonitoringSuite/tests/MonitoringSuite.Tests.csproj" />
+  </Folder>
+  <Folder Name="/sdk/NetworkingSuite/" />
+  <Folder Name="/sdk/NetworkingSuite/samples/">
+    <Project Path="sdk/NetworkingSuite/samples/NetworkingSuite.Samples.csproj" />
+  </Folder>
+  <Folder Name="/sdk/NetworkingSuite/src/">
+    <Project Path="sdk/NetworkingSuite/src/NetworkingSuite.csproj" />
+  </Folder>
+  <Folder Name="/sdk/NetworkingSuite/tests/">
+    <Project Path="sdk/NetworkingSuite/tests/NetworkingSuite.Tests.csproj" />
+  </Folder>
+  <Folder Name="/sdk/ObjectStorage/" />
+  <Folder Name="/sdk/ObjectStorage/samples/">
+    <Project Path="sdk/ObjectStorage/samples/ObjectStorage.Samples.csproj" />
+  </Folder>
+  <Folder Name="/sdk/ObjectStorage/src/">
+    <Project Path="sdk/ObjectStorage/src/ObjectStorage.csproj" />
+  </Folder>
+  <Folder Name="/sdk/ObjectStorage/tests/">
+    <Project Path="sdk/ObjectStorage/tests/ObjectStorage.Tests.csproj" />
+  </Folder>
+  <Folder Name="/sdk/SecretManager/" />
+  <Folder Name="/sdk/SecretManager/samples/">
+    <Project Path="sdk/SecretManager/samples/SecretManager.Samples.csproj" />
+  </Folder>
+  <Folder Name="/sdk/SecretManager/src/">
+    <Project Path="sdk/SecretManager/src/SecretManager.csproj" />
+  </Folder>
+  <Folder Name="/sdk/SecretManager/tests/">
+    <Project Path="sdk/SecretManager/tests/SecretManager.Tests.csproj" />
+  </Folder>
+  <Folder Name="/sdk/Shared/" />
+  <Folder Name="/sdk/Shared/src/">
+    <Project Path="sdk/Shared/src/Shared.csproj" />
+  </Folder>
+  <Folder Name="/sdk/Shared/tests/">
+    <Project Path="sdk/Shared/tests/Shared.Tests.csproj" />
+  </Folder>
+  <Folder Name="/sdk/SimpleMQ/" />
+  <Folder Name="/sdk/SimpleMQ/samples/">
+    <Project Path="sdk/SimpleMQ/samples/SimpleMQ.Samples.csproj" />
+  </Folder>
+  <Folder Name="/sdk/SimpleMQ/src/">
+    <Project Path="sdk/SimpleMQ/src/SimpleMQ.csproj" />
+  </Folder>
+  <Folder Name="/sdk/SimpleMQ/tests/">
+    <Project Path="sdk/SimpleMQ/tests/SimpleMQ.Tests.csproj" />
+  </Folder>
+  <Folder Name="/sdk/SimpleNotification/" />
+  <Folder Name="/sdk/SimpleNotification/samples/">
+    <Project Path="sdk/SimpleNotification/samples/SimpleNotification.Samples.csproj" />
+  </Folder>
+  <Folder Name="/sdk/SimpleNotification/src/">
+    <Project Path="sdk/SimpleNotification/src/SimpleNotification.csproj" />
+  </Folder>
+  <Folder Name="/sdk/SimpleNotification/tests/">
+    <Project Path="sdk/SimpleNotification/tests/SimpleNotification.Tests.csproj" />
+  </Folder>
+  <Folder Name="/sdk/Workflows/" />
+  <Folder Name="/sdk/Workflows/samples/">
+    <Project Path="sdk/Workflows/samples/Workflows.Samples.csproj" />
+  </Folder>
+  <Folder Name="/sdk/Workflows/src/">
+    <Project Path="sdk/Workflows/src/Workflows.csproj" />
+  </Folder>
+  <Folder Name="/sdk/Workflows/tests/">
+    <Project Path="sdk/Workflows/tests/Workflows.Tests.csproj" />
+  </Folder>
+</Solution>

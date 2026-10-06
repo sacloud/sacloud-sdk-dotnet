@@ -1,0 +1,53 @@
+{
+  "input": "openapi.yaml",
+  "patches": [
+    {
+      "type": "remove-format",
+      "format": "iso8601"
+    },
+    {
+      "type": "patch-schema",
+      "target": ["CloudHSM"],
+      "fieldOverrides": {
+        "required": [
+          "Availability",
+          "CreatedAt",
+          "ID",
+          "IPv4Address",
+          "IPv4NetworkAddress",
+          "IPv4PrefixLength",
+          "LocalRouter",
+          "ModifiedAt",
+          "Name",
+          "ServiceClass"
+        ]
+      }
+    },
+    {
+      "type": "patch-schema",
+      "target": ["PaginatedCloudHSMSoftwareLicenseList"],
+      "fieldOverrides": {
+        "properties": {
+          "Count": {
+            "type": "integer",
+            "example": 10
+          },
+          "From": {
+            "type": "integer",
+            "example": 0
+          },
+          "Total": {
+            "type": "integer",
+            "example": 10
+          },
+          "Licenses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CloudHSMSoftwareLicense"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

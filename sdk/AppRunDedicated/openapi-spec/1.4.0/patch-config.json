@@ -1,0 +1,18 @@
+{
+  "input": "openapi.yaml",
+  "patches": [
+    {
+      "type": "remove-format",
+      "format": "unixtime"
+    },
+    {
+      "type": "add-format",
+      "format": "int64",
+      "namePattern": "^(collectedAtSec|created|notBeforeSec|notAfterSec|updated|startedAt)$",
+      "targetType": "integer"
+    },
+    {
+      "type": "simplify-allof"
+    }
+  ]
+}

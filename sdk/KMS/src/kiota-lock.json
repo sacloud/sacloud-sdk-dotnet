@@ -1,0 +1,42 @@
+{
+  "descriptionHash": "EA7174E6AA2FCF18FC24291FE8BDA4304E7E603E8A9E9349D563D396C976425EE4EC93860F6D3F330016C002CF03E4B0EC680B76836CC1A9658EF0820C056BCA",
+  "descriptionLocation": "../openapi-spec/1.0.0/openapi.kiota.json",
+  "lockFileVersion": "1.0.0",
+  "kiotaVersion": "1.29.0",
+  "clientClassName": "KMSClient",
+  "typeAccessModifier": "Public",
+  "clientNamespaceName": "Sacloud.Sdk.KMS",
+  "language": "CSharp",
+  "usesBackingStore": false,
+  "excludeBackwardCompatible": true,
+  "includeAdditionalData": true,
+  "disableSSLValidation": false,
+  "serializers": [
+    "Microsoft.Kiota.Serialization.Json.JsonSerializationWriterFactory",
+    "Microsoft.Kiota.Serialization.Text.TextSerializationWriterFactory",
+    "Microsoft.Kiota.Serialization.Form.FormSerializationWriterFactory",
+    "Microsoft.Kiota.Serialization.Multipart.MultipartSerializationWriterFactory"
+  ],
+  "deserializers": [
+    "Microsoft.Kiota.Serialization.Json.JsonParseNodeFactory",
+    "Microsoft.Kiota.Serialization.Text.TextParseNodeFactory",
+    "Microsoft.Kiota.Serialization.Form.FormParseNodeFactory"
+  ],
+  "structuredMimeTypes": [
+    "application/json",
+    "text/plain;q=0.9",
+    "application/x-www-form-urlencoded;q=0.2",
+    "multipart/form-data;q=0.1"
+  ],
+  "includePatterns": [
+    "/kms/keys",
+    "/kms/keys/{resource_id}",
+    "/kms/keys/{resource_id}/rotate",
+    "/kms/keys/{resource_id}/status",
+    "/kms/keys/{resource_id}/schedule-destruction",
+    "/kms/keys/{resource_id}/encrypt",
+    "/kms/keys/{resource_id}/decrypt"
+  ],
+  "excludePatterns": [],
+  "disabledValidationRules": []
+}

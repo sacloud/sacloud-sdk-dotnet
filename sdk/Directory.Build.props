@@ -1,0 +1,6 @@
+<Project>
+	<PropertyGroup>
+		<RootNamespace>Sacloud.Sdk.$(MSBuildProjectName)</RootNamespace>
+		<PackageId>Sacloud.Sdk.$(MSBuildProjectName)</PackageId>
+	</PropertyGroup>
+</Project>

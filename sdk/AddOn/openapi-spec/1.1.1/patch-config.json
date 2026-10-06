@@ -1,0 +1,9 @@
+{
+  "input": "addon-api.yaml",
+  "patches": [
+    {
+      "type": "extract-inline-schemas",
+      "errorSchemaName": "Error"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "input": "monitoring-suite-api.yaml",
+  "patches": [
+    {
+      "type": "trim-path-string"
+    },
+    {
+      "type": "remove-format",
+      "format": "email"
+    },
+    {
+      "type": "simplify-allof"
+    }
+  ]
+}

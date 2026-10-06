@@ -1,0 +1,12 @@
+{
+  "input": "apprun-shared-api.yaml",
+  "patches": [
+    {
+      "type": "simplify-oneof",
+      "addDummyEndpoints": true
+    },
+    {
+      "type": "extract-array-inline-items"
+    }
+  ]
+}

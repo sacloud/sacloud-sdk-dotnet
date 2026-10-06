@@ -1,0 +1,36 @@
+{
+  "descriptionHash": "F93D56A4BA370D3AA4B1D9995339B867309867BEDF185B584680AE459D6970CDB15C094E6F56E1D5C1F088D9E81D1988932A8518214BF0A407051C9F4F68FDA7",
+  "descriptionLocation": "../openapi-spec/1.0.0/openapi.kiota.yaml",
+  "lockFileVersion": "1.0.0",
+  "kiotaVersion": "1.29.0",
+  "clientClassName": "CloudHSMClient",
+  "typeAccessModifier": "Public",
+  "clientNamespaceName": "Sacloud.Sdk.CloudHSM",
+  "language": "CSharp",
+  "usesBackingStore": false,
+  "excludeBackwardCompatible": true,
+  "includeAdditionalData": true,
+  "disableSSLValidation": false,
+  "serializers": [
+    "Microsoft.Kiota.Serialization.Json.JsonSerializationWriterFactory",
+    "Microsoft.Kiota.Serialization.Text.TextSerializationWriterFactory",
+    "Microsoft.Kiota.Serialization.Form.FormSerializationWriterFactory",
+    "Microsoft.Kiota.Serialization.Multipart.MultipartSerializationWriterFactory"
+  ],
+  "deserializers": [
+    "Microsoft.Kiota.Serialization.Json.JsonParseNodeFactory",
+    "Microsoft.Kiota.Serialization.Text.TextParseNodeFactory",
+    "Microsoft.Kiota.Serialization.Form.FormParseNodeFactory"
+  ],
+  "structuredMimeTypes": [
+    "application/json",
+    "text/plain;q=0.9",
+    "application/x-www-form-urlencoded;q=0.2",
+    "multipart/form-data;q=0.1"
+  ],
+  "includePatterns": [
+    "/cloudhsm/**"
+  ],
+  "excludePatterns": [],
+  "disabledValidationRules": []
+}

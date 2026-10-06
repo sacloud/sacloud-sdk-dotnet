@@ -1,0 +1,15 @@
+{
+  "input": "objectstorage-api.yaml",
+  "patches": [
+    {
+      "type": "simplify-allof"
+    },
+    {
+      "type": "extract-array-inline-items"
+    },
+    {
+      "type": "extract-inline-schemas",
+      "errorSchemaName": "Error"
+    }
+  ]
+}

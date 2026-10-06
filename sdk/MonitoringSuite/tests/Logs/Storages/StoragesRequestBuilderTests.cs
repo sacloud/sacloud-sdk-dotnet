@@ -1,0 +1,741 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Kiota.Abstractions;
+using Microsoft.Kiota.Abstractions.Serialization;
+using Microsoft.Kiota.Serialization.Json;
+using NSubstitute;
+using NSubstitute.ExceptionExtensions;
+using Sacloud.Sdk.MonitoringSuite.Logs.Storages;
+using Sacloud.Sdk.MonitoringSuite.Logs.Storages.Item;
+using Sacloud.Sdk.MonitoringSuite.Models;
+using Sacloud.Sdk.Shared.Models;
+using System.ComponentModel.DataAnnotations;
+
+namespace Sacloud.Sdk.MonitoringSuite.Tests.Logs.Storages;
+
+/// <summary>
+/// StoragesRequestBuilderのテスト
+/// </summary>
+public class StoragesRequestBuilderTests
+{
+    private readonly ILoggerFactory _mockLoggerFactory;
+    private readonly ILogger<StoragesRequestBuilder> _mockLogger;
+
+    public StoragesRequestBuilderTests()
+    {
+        _mockLoggerFactory = Substitute.For<ILoggerFactory>();
+        _mockLogger = Substitute.For<ILogger<StoragesRequestBuilder>>();
+        _mockLoggerFactory.CreateLogger<StoragesRequestBuilder>().Returns(_mockLogger);
+    }
+
+    /// <summary>
+    /// コンストラクタ（PathParameters版）が正常に初期化されることを確認
+    /// </summary>
+    [Fact]
+    public void Constructor_WithPathParameters_InitializesSuccessfully()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+
+        Assert.NotNull(builder);
+    }
+
+    /// <summary>
+    /// コンストラクタ（rawUrl版）が正常に初期化されることを確認
+    /// </summary>
+    [Fact]
+    public void Constructor_WithRawUrl_InitializesSuccessfully()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+
+        var builder = new StoragesRequestBuilder("https://api.example.com/logs/storages", requestAdapter, _mockLoggerFactory);
+
+        Assert.NotNull(builder);
+    }
+
+    /// <summary>
+    /// インデクサーが正しいLogResourceItemRequestBuilderを返すことを確認
+    /// </summary>
+    [Fact]
+    public void Indexer_WithLong_ReturnsLogResourceItemRequestBuilder()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+
+        var itemBuilder = builder[1L];
+
+        Assert.NotNull(itemBuilder);
+        Assert.IsType<LogResourceItemRequestBuilder>(itemBuilder);
+    }
+
+    /// <summary>
+    /// インデクサーが毎回新しいインスタンスを返すことを確認
+    /// </summary>
+    [Fact]
+    public void Indexer_ReturnsNewInstance_OnEachCall()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+
+        var itemBuilder1 = builder[1L];
+        var itemBuilder2 = builder[1L];
+
+        Assert.NotSame(itemBuilder1, itemBuilder2);
+    }
+
+    /// <summary>
+    /// ToGetRequestInformationがGETメソッドで正しいRequestInformationを作成することを確認
+    /// </summary>
+    [Fact]
+    public void ToGetRequestInformation_CreatesRequestInformationWithGetMethod()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+
+        var requestInfo = builder.ToGetRequestInformation();
+
+        Assert.NotNull(requestInfo);
+        Assert.Equal(Method.GET, requestInfo.HttpMethod);
+    }
+
+    /// <summary>
+    /// ToGetRequestInformationが正しいAcceptヘッダーを設定することを確認
+    /// </summary>
+    [Fact]
+    public void ToGetRequestInformation_SetsAcceptHeader()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+
+        var requestInfo = builder.ToGetRequestInformation();
+
+        Assert.True(requestInfo.Headers.ContainsKey("Accept"));
+        Assert.Contains("application/json", requestInfo.Headers["Accept"]);
+        Assert.True(requestInfo.Headers.ContainsKey("X-Sakura-Bigint-As-Int"));
+        Assert.Contains("1", requestInfo.Headers["X-Sakura-Bigint-As-Int"]);
+    }
+
+    /// <summary>
+    /// ToPostRequestInformationがPOSTメソッドで正しいRequestInformationを作成することを確認
+    /// </summary>
+    [Fact]
+    public void ToPostRequestInformation_CreatesRequestInformationWithPostMethod()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        requestAdapter.SerializationWriterFactory.Returns(
+            new JsonSerializationWriterFactory());
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new LogStorageCreateRequest();
+
+        var requestInfo = builder.ToPostRequestInformation(body);
+
+        Assert.NotNull(requestInfo);
+        Assert.Equal(Method.POST, requestInfo.HttpMethod);
+    }
+
+    /// <summary>
+    /// ToPostRequestInformationにnullボディを渡すと例外をスローすることを確認
+    /// </summary>
+    [Fact]
+    public void ToPostRequestInformation_WithNullBody_ThrowsArgumentNullException()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+
+        Assert.Throws<ArgumentNullException>(() => builder.ToPostRequestInformation(null!));
+    }
+
+    /// <summary>
+    /// ToPostRequestInformationが正しいAcceptヘッダーを設定することを確認
+    /// </summary>
+    [Fact]
+    public void ToPostRequestInformation_SetsAcceptHeader()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        requestAdapter.SerializationWriterFactory.Returns(
+            new JsonSerializationWriterFactory());
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new LogStorageCreateRequest();
+
+        var requestInfo = builder.ToPostRequestInformation(body);
+
+        Assert.True(requestInfo.Headers.ContainsKey("Accept"));
+        Assert.Contains("application/json", requestInfo.Headers["Accept"]);
+        Assert.True(requestInfo.Headers.ContainsKey("X-Sakura-Bigint-As-Int"));
+        Assert.Contains("1", requestInfo.Headers["X-Sakura-Bigint-As-Int"]);
+    }
+
+    /// <summary>
+    /// WithUrlが新しいStoragesRequestBuilderインスタンスを返すことを確認
+    /// </summary>
+    [Fact]
+    public void WithUrl_ReturnsNewInstance()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+
+        var newBuilder = builder.WithUrl("https://other.example.com/logs/storages");
+
+        Assert.NotNull(newBuilder);
+        Assert.IsType<StoragesRequestBuilder>(newBuilder);
+        Assert.NotSame(builder, newBuilder);
+    }
+
+    /// <summary>
+    /// QueryParametersのCountプロパティセッターが正常に動作することを確認
+    /// </summary>
+    [Fact]
+    public void QueryParameters_Count_CanBeSet()
+    {
+        var queryParams = new StoragesRequestBuilder.StoragesRequestBuilderGetQueryParameters
+        {
+            Count = 50
+        };
+
+        Assert.Equal(50, queryParams.Count);
+    }
+
+    /// <summary>
+    /// QueryParametersのFromプロパティセッターが正常に動作することを確認
+    /// </summary>
+    [Fact]
+    public void QueryParameters_From_CanBeSet()
+    {
+        var queryParams = new StoragesRequestBuilder.StoragesRequestBuilderGetQueryParameters
+        {
+            From = 10
+        };
+
+        Assert.Equal(10, queryParams.From);
+    }
+
+    /// <summary>
+    /// QueryParametersのStatusプロパティセッターが正常に動作することを確認
+    /// </summary>
+    [Fact]
+    public void QueryParameters_Status_CanBeSet()
+    {
+        var queryParams = new StoragesRequestBuilder.StoragesRequestBuilderGetQueryParameters
+        {
+            Status = GetStatusQueryParameterType.Assigned
+        };
+
+        Assert.Equal(GetStatusQueryParameterType.Assigned, queryParams.Status);
+    }
+
+    /// <summary>
+    /// QueryParametersのBucketClassificationプロパティセッターが正常に動作することを確認
+    /// </summary>
+    [Fact]
+    public void QueryParameters_BucketClassification_CanBeSet()
+    {
+        var queryParams = new StoragesRequestBuilder.StoragesRequestBuilderGetQueryParameters
+        {
+            BucketClassification = GetBucket__classificationQueryParameterType.Shared
+        };
+
+        Assert.Equal(GetBucket__classificationQueryParameterType.Shared, queryParams.BucketClassification);
+    }
+
+    /// <summary>
+    /// GetAsyncがアダプターがnullを返す場合にnullを返すことを確認
+    /// </summary>
+    [Fact]
+    public async Task GetAsync_ReturnsNull_WhenAdapterReturnsNull()
+    {
+        var adapter = Substitute.For<IRequestAdapter>();
+        adapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        adapter.SendAsync<PaginatedLogStorageList>(
+            Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<PaginatedLogStorageList>>(),
+            Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
+            Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<PaginatedLogStorageList?>(null));
+        var builder = new StoragesRequestBuilder(pathParameters, adapter, _mockLoggerFactory);
+
+        var result = await builder.GetAsync();
+
+        Assert.Null(result);
+    }
+
+    /// <summary>
+    /// GetAsyncでAPIエラーが発生した場合に例外をスローすることを確認
+    /// </summary>
+    [Fact]
+    public async Task GetAsync_WithApiError_ThrowsApiException()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var expectedException = new ApiError
+        {
+            ResponseStatusCode = 401
+        };
+        ((IAdditionalDataHolder)expectedException).AdditionalData = new Dictionary<string, object>
+        {
+            { "error_code", "unauthorized" },
+            { "error_msg", "error-unauthorized" },
+            { "is_fatal", true },
+            { "serial", "1234567890" },
+            { "status", "401 Unauthorized" }
+        };
+
+        requestAdapter.SendAsync<PaginatedLogStorageList>(
+            Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<PaginatedLogStorageList>>(),
+            Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
+            Arg.Any<CancellationToken>()
+        ).ThrowsAsync(expectedException);
+
+        await Assert.ThrowsAsync<ApiError>(async () =>
+        {
+            await builder.GetAsync();
+        });
+
+        _mockLogger.Received(1).Log(
+            LogLevel.Error,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(state =>
+                System.Text.RegularExpressions.Regex.IsMatch(
+                state.ToString()!,
+                @"^ログストレージ一覧取得のAPIエラーが発生しました。 \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z \[StatusCode, 401\], \[error_code, unauthorized\], \[error_msg, error\-unauthorized\], \[is_fatal, True\], \[serial, 1234567890\], \[status, 401 Unauthorized\]$")),
+            Arg.Any<ApiException>(),
+            Arg.Any<Func<object, Exception?, string>>());
+    }
+
+    /// <summary>
+    /// GetAsyncでその他のエラーが発生した場合に例外をスローすることを確認
+    /// </summary>
+    [Fact]
+    public async Task GetAsync_WithOtherError_ThrowsException()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var expectedException = new Exception();
+
+        requestAdapter.SendAsync<PaginatedLogStorageList>(
+            Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<PaginatedLogStorageList>>(),
+            Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
+            Arg.Any<CancellationToken>()
+        ).ThrowsAsync(expectedException);
+
+        await Assert.ThrowsAsync<Exception>(async () =>
+        {
+            await builder.GetAsync();
+        });
+
+        _mockLogger.Received(1).Log(
+            LogLevel.Error,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(state =>
+                System.Text.RegularExpressions.Regex.IsMatch(
+                state.ToString()!,
+                @"^ログストレージ一覧の取得中にエラーが発生しました。 \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z$")),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
+    }
+
+    /// <summary>
+    /// GetAsyncがRequestAdapter.SendAsyncを呼び出すことを確認
+    /// </summary>
+    [Fact]
+    public async Task GetAsync_CallsRequestAdapterSendAsync()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var expectedResponse = new PaginatedLogStorageList();
+
+        requestAdapter.SendAsync<PaginatedLogStorageList>(
+            Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<PaginatedLogStorageList>>(),
+            Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
+            Arg.Any<CancellationToken>()
+        ).Returns(expectedResponse);
+
+        var result = await builder.GetAsync();
+
+        await requestAdapter.Received(1).SendAsync<PaginatedLogStorageList>(
+            Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<PaginatedLogStorageList>>(),
+            Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
+            Arg.Any<CancellationToken>()
+        );
+        Assert.Equal(expectedResponse, result);
+        _mockLogger.Received(1).Log(
+            LogLevel.Information,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(state =>
+                System.Text.RegularExpressions.Regex.IsMatch(
+                    state.ToString()!,
+                    @"^ログストレージ一覧の取得を開始します。 \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z$")),
+            null,
+            Arg.Any<Func<object, Exception?, string>>());
+        _mockLogger.Received(1).Log(
+            LogLevel.Information,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(state =>
+                System.Text.RegularExpressions.Regex.IsMatch(
+                    state.ToString()!,
+                    @"^ログストレージ一覧の取得が完了しました。 \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z \[StatusCode, 200\]$")),
+            null,
+            Arg.Any<Func<object, Exception?, string>>());
+    }
+
+    /// <summary>
+    /// PostAsyncがアダプターがnullを返す場合にnullを返すことを確認
+    /// </summary>
+    [Fact]
+    public async Task PostAsync_ReturnsNull_WhenAdapterReturnsNull()
+    {
+        var adapter = Substitute.For<IRequestAdapter>();
+        adapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        adapter.SendAsync<LogStorage>(
+            Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<LogStorage>>(),
+            Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
+            Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<LogStorage?>(null));
+        var builder = new StoragesRequestBuilder(pathParameters, adapter, _mockLoggerFactory);
+
+        var result = await builder.PostAsync(new LogStorageCreateRequest
+        {
+            IsSystem = false,
+            Name = "test-log-storage"
+        });
+
+        Assert.Null(result);
+    }
+
+    /// <summary>
+    /// PostAsyncのリクエストボディパラメータにnullを入力した場合に例外をスローすることを確認
+    /// </summary>
+    [Theory]
+    [InlineData("IsSystem")]
+    [InlineData("Name")]
+    public async Task PostAsync_WithNullRequestBodyParameter_ThrowsValidationException(string invalidParameterName)
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new LogStorageCreateRequest
+        {
+            IsSystem = invalidParameterName == "IsSystem" ? null : false,
+            Name = invalidParameterName == "Name" ? null : "test-log-storage"
+
+        };
+
+        var exception = await Assert.ThrowsAsync<ValidationException>(() => builder.PostAsync(body));
+
+        Assert.Equal($"{invalidParameterName}が入力されていません。", exception.Message);
+        _mockLogger.Received(1).LogWarning($"{invalidParameterName}が入力されていません。");
+    }
+
+    /// <summary>
+    /// PostAsyncのリクエストボディパラメータの値が最大文字数を超過した場合に例外をスローすることを確認
+    /// </summary>
+    [Theory]
+    [InlineData("Name", 64)]
+    [InlineData("Description", 512)]
+    public async Task PostAsync_WithInvalidMaxLengthRequestBodyParameter_ThrowsValidationException(string invalidParameterName, int validMaxLength)
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new LogStorageCreateRequest
+        {
+            IsSystem = false,
+            Name = invalidParameterName == "Name" ? new string('a', validMaxLength + 1) : "test-name",
+            Description = invalidParameterName == "Description" ? new string('a', validMaxLength + 1) : "test-description"
+        };
+
+        var exception = await Assert.ThrowsAsync<ValidationException>(() => builder.PostAsync(body));
+
+        Assert.Equal($"{invalidParameterName}は{validMaxLength}文字以下で入力してください。", exception.Message);
+        _mockLogger.Received(1).LogWarning($"{invalidParameterName}は{validMaxLength}文字以下で入力してください。");
+    }
+
+    /// <summary>
+    /// PostAsyncのクエリパラメータの値が有効な数値範囲外だった場合にValidationExceptionをスローすることを確認
+    /// </summary>
+    [Theory]
+    [InlineData("KmsKeyId", -1)]
+    [InlineData("KmsKeyId", 1000000000000)]
+    [InlineData("ServicePrincipalId", -1)]
+    [InlineData("ServicePrincipalId", 1000000000000)]
+    public async Task PostAsync_WithInvalidRangeRequestBodyParameter_ThrowsValidationException(string invalidParameterName, long invalidParameterValue)
+    {
+        var adapter = Substitute.For<IRequestAdapter>();
+        adapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, adapter, _mockLoggerFactory);
+        var body = new LogStorageCreateRequest
+        {
+            IsSystem = false,
+            Name = "test-name",
+            KmsKeyId = invalidParameterName == "KmsKeyId" ? invalidParameterValue : 1234567890,
+            ServicePrincipalId = invalidParameterName == "ServicePrincipalId" ? invalidParameterValue : 1234567890
+        };
+        var result = await Assert.ThrowsAsync<ValidationException>(() => builder.PostAsync(body));
+        Assert.Equal($"{invalidParameterName}の値は0以上999999999999以下で入力してください。", result.Message);
+        _mockLogger.Received(1).LogWarning($"{invalidParameterName}の値は0以上999999999999以下で入力してください。");
+    }
+
+    /// <summary>
+    /// PostAsyncのリクエストボディパラメータの値がEnumに含まれていない場合に例外がスローされることを確認
+    /// </summary>
+    [Fact]
+    public async Task PostAsync_WithInvalidEnumRequestBodyParameter_ThrowsValidationException()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new LogStorageCreateRequest
+        {
+            Classification = (LogStorageCreateRequest_classification)999,
+            IsSystem = false,
+            Name = "test-name",
+        };
+
+        var exception = await Assert.ThrowsAsync<ValidationException>(() => builder.PostAsync(body));
+
+        Assert.Equal("ClassificationはEnumに含まれる値を入力してください。", exception.Message);
+        _mockLogger.Received(1).LogWarning("ClassificationはEnumに含まれる値を入力してください。");
+    }
+
+    /// <summary>
+    /// PostAsyncでAPIエラーが発生した場合に例外をスローすることを確認
+    /// </summary>
+    [Fact]
+    public async Task PostAsync_WithApiError_ThrowsApiException()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new LogStorageCreateRequest
+        {
+            IsSystem = false,
+            Name = "test-name"
+        };
+        var expectedException = new ApiError
+        {
+            ResponseStatusCode = 401
+        };
+        ((IAdditionalDataHolder)expectedException).AdditionalData = new Dictionary<string, object>
+        {
+            { "error_code", "unauthorized" },
+            { "error_msg", "error-unauthorized" },
+            { "is_fatal", true },
+            { "serial", "1234567890" },
+            { "status", "401 Unauthorized" }
+        };
+
+        requestAdapter.SendAsync<LogStorage>(
+            Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<LogStorage>>(),
+            Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
+            Arg.Any<CancellationToken>()
+        ).ThrowsAsync(expectedException);
+
+        await Assert.ThrowsAsync<ApiError>(async () =>
+        {
+            await builder.PostAsync(body);
+        });
+
+        _mockLogger.Received(1).Log(
+            LogLevel.Error,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(state =>
+                System.Text.RegularExpressions.Regex.IsMatch(
+                state.ToString()!,
+                @"^ログストレージ作成のAPIエラーが発生しました。 \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z \[StatusCode, 401\], \[error_code, unauthorized\], \[error_msg, error\-unauthorized\], \[is_fatal, True\], \[serial, 1234567890\], \[status, 401 Unauthorized\]$")),
+            Arg.Any<ApiException>(),
+            Arg.Any<Func<object, Exception?, string>>());
+    }
+
+    /// <summary>
+    /// PostAsyncでその他のエラーが発生した場合に例外をスローすることを確認
+    /// </summary>
+    [Fact]
+    public async Task PostAsync_WithOtherError_ThrowsException()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new LogStorageCreateRequest
+        {
+            IsSystem = false,
+            Name = "test-name"
+        };
+        var expectedException = new Exception();
+
+        requestAdapter.SendAsync<LogStorage>(
+            Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<LogStorage>>(),
+            Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
+            Arg.Any<CancellationToken>()
+        ).ThrowsAsync(expectedException);
+
+        await Assert.ThrowsAsync<Exception>(async () =>
+        {
+            await builder.PostAsync(body);
+        });
+
+        _mockLogger.Received(1).Log(
+            LogLevel.Error,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(state =>
+                System.Text.RegularExpressions.Regex.IsMatch(
+                state.ToString()!,
+                @"^ログストレージの作成中にエラーが発生しました。 \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z$")),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
+    }
+
+    /// <summary>
+    /// PostAsyncがRequestAdapter.SendAsyncを呼び出すことを確認
+    /// </summary>
+    [Fact]
+    public async Task PostAsync_CallsRequestAdapterSendAsync()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new StoragesRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new LogStorageCreateRequest
+        {
+            IsSystem = false,
+            Name = "test-name"
+        };
+        var expectedResponse = new LogStorage();
+
+        requestAdapter.SendAsync<LogStorage>(
+            Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<LogStorage>>(),
+            Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
+            Arg.Any<CancellationToken>()
+        ).Returns(expectedResponse);
+
+        var result = await builder.PostAsync(body);
+
+        await requestAdapter.Received(1).SendAsync<LogStorage>(
+            Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<LogStorage>>(),
+            Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
+            Arg.Any<CancellationToken>()
+        );
+        Assert.Equal(expectedResponse, result);
+        _mockLogger.Received(1).Log(
+            LogLevel.Information,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(state =>
+                System.Text.RegularExpressions.Regex.IsMatch(
+                    state.ToString()!,
+                    @"^ログストレージの作成を開始します。 \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z$")),
+            null,
+            Arg.Any<Func<object, Exception?, string>>());
+        _mockLogger.Received(1).Log(
+            LogLevel.Information,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(state =>
+                System.Text.RegularExpressions.Regex.IsMatch(
+                    state.ToString()!,
+                    @"^ログストレージの作成が完了しました。 \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z \[StatusCode, 201\]$")),
+            null,
+            Arg.Any<Func<object, Exception?, string>>());
+    }
+}

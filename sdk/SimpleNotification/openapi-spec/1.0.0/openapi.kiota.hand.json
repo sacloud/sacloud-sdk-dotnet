@@ -1,0 +1,1563 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "シンプル通知 API",
+    "description": "---\nCopyright SAKURA internet Inc.\n\n# はじめに\n「シンプル通知」は、メールや Webhook を利用し、任意のタイミングで通知を送信するサービスです。\n\n# 基本的な使い方\n## APIキーの発行\nAPIを利用するためには、認証のための「APIキー」が必要です。事前にキーを発行しておきます。\nAPIキーは「ユーザーID」「パスワード」に相当する「トークン」と呼ばれる認証情報で構成されています。\n|   項目名   | APIキー発行時の項目名        | このドキュメント内での例             |\n|------------|------------------------------|--------------------------------------|\n| ユーザーID | アクセストークン(UUID)       | 01234567-89ab-cdef-0123-456789abcdef |\n| パスワード | アクセストークンシークレット | SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM |\n<div class=\"warning\">\n  <b>操作マニュアル</b><br />\n  <ul><li><a href=\"https://manual.sakura.ad.jp/cloud/api/apikey.html\">APIキー | さくらのクラウド ドキュメント</a></li></ul>\n</div>\n\n## APIエンドポイント\nhttps://secure.sakura.ad.jp/cloud/zone/is1a/api/cloud/1.1",
+    "contact": {
+      "name": "simple-notification"
+    },
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/commonserviceitem": {
+      "get": {
+        "tags": [
+          "通知先",
+          "通知先グループ",
+          "通知ルーティング"
+        ],
+        "summary": "リソースの一覧取得",
+        "description": "リソースの一覧取得。クエリパラメータにて下記のように`Provider.Class`を指定してフィルタを設定することで通知先、通知先グループまたは通知ルーティングのリソースのみを取得できます。\n- 通知先: `/commonserviceitem?{\"Filter\":{\"Provider.Class\":\"saknoticedestination\"}}`<br>\n- 通知先グループ: `/commonserviceitem?{\"Filter\":{\"Provider.Class\":\"saknoticegroup\"}}`<br>\n- 通知ルーティング: `/commonserviceitem?{\"Filter\":{\"Provider.Class\":\"saknoticerouting\"}}`\n",
+        "operationId": "listCommonServiceItems",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListCommonServiceItemsResponse"
+                },
+                "examples": {
+                  "通知先一覧": {
+                    "$ref": "#/components/examples/ListCommonServiceItemsResponseDestinations"
+                  },
+                  "通知先グループ一覧": {
+                    "$ref": "#/components/examples/ListCommonServiceItemsResponseGroups"
+                  },
+                  "通知ルーティング一覧": {
+                    "$ref": "#/components/examples/ListCommonServiceItemsResponseRoutings"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "通知先",
+          "通知先グループ",
+          "通知ルーティング"
+        ],
+        "summary": "リソースの作成",
+        "description": "リソースの作成。`Provider.Class`の値に応じて必要な`Settings`の内容が異なります。\n",
+        "operationId": "createCommonServiceItem",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostCommonServiceItemRequest"
+              },
+              "examples": {
+                "通知先": {
+                  "$ref": "#/components/examples/PostCommonServiceItemRequestDestination"
+                },
+                "通知先グループ": {
+                  "$ref": "#/components/examples/PostCommonServiceItemRequestGroup"
+                },
+                "通知ルーティング": {
+                  "$ref": "#/components/examples/PostCommonServiceItemRequestRouting"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "CommonServiceItem"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "CommonServiceItem": {
+                      "$ref": "#/components/schemas/CommonServiceItem"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/commonserviceitem/{id}": {
+      "get": {
+        "tags": [
+          "通知先",
+          "通知先グループ",
+          "通知ルーティング"
+        ],
+        "summary": "リソースの取得",
+        "description": "リソースの取得。取得された`CommonServiceItem`の`Provider.Class`の値に応じて`Settings`の内容は異なります。\n",
+        "operationId": "getCommonServiceItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9]{12}$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "CommonServiceItem"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "CommonServiceItem": {
+                      "$ref": "#/components/schemas/CommonServiceItem"
+                    }
+                  }
+                },
+                "examples": {
+                  "通知先": {
+                    "$ref": "#/components/examples/GetCommonServiceItemsResponseDestination"
+                  },
+                  "通知先グループ": {
+                    "$ref": "#/components/examples/GetCommonServiceItemsResponseGroup"
+                  },
+                  "通知ルーティング": {
+                    "$ref": "#/components/examples/GetCommonServiceItemsResponseRouting"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "通知先",
+          "通知先グループ",
+          "通知ルーティング"
+        ],
+        "summary": "リソースの更新",
+        "description": "リソースの更新。更新される`CommonServiceItem`の`Provider.Class`の値に応じて`Settings`の内容は異なります。\n",
+        "operationId": "updateCommonServiceItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9]{12}$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PutCommonServiceItemRequest"
+              },
+              "examples": {
+                "通知先": {
+                  "$ref": "#/components/examples/PutCommonServiceItemRequestDestination"
+                },
+                "通知先グループ": {
+                  "$ref": "#/components/examples/PutCommonServiceItemRequestGroup"
+                },
+                "通知ルーティング": {
+                  "$ref": "#/components/examples/PutCommonServiceItemRequestRouting"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "CommonServiceItem"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "CommonServiceItem": {
+                      "$ref": "#/components/schemas/CommonServiceItem"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "通知先",
+          "通知先グループ",
+          "通知ルーティング"
+        ],
+        "summary": "リソースの削除",
+        "description": "リソースの削除。\n",
+        "operationId": "deleteCommonServiceItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9]{12}$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "CommonServiceItem"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "CommonServiceItem": {
+                      "$ref": "#/components/schemas/CommonServiceItem"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/commonserviceitem/simplenotification/routing/reorder": {
+      "put": {
+        "tags": [
+          "通知ルーティング"
+        ],
+        "summary": "通知ルーティングの並び替え",
+        "description": "通知ルーティングの優先順位を並び替えます。\n`PriorityRank`の値は他の通知ルーティングと重複しないように指定する必要があります。\n",
+        "operationId": "reorderRouting",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PutCommonServiceItemRoutingReorderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "is_ok": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/commonserviceitem/{id}/simplenotification/status": {
+      "get": {
+        "tags": [
+          "通知先"
+        ],
+        "summary": "通知先ステータス情報の取得",
+        "description": "通知先が通知送信可能かどうかのステータス情報を取得します。\n",
+        "operationId": "getCommonServiceItemStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9]{12}$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCommonServiceItemStatusResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/commonserviceitem/{id}/simplenotification/message": {
+      "post": {
+        "tags": [
+          "通知送信"
+        ],
+        "summary": "メッセージの送信",
+        "description": "指定した通知先グループに対してメッセージを送信します。\n",
+        "operationId": "sendNotificationMessage",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9]{12}$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendNotificationMessageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendNotificationMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/commonserviceitem/simplenotification/history": {
+      "get": {
+        "tags": [
+          "通知履歴"
+        ],
+        "summary": "通知履歴の一覧取得",
+        "description": "通知履歴の一覧取得。\n直近30日間以内の通知送信履歴が最大100件まで取得可能です。\n",
+        "operationId": "listNotificationHistories",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListSimpleNotificationHistoriesResponse"
+                },
+                "examples": {
+                  "通知履歴一覧": {
+                    "$ref": "#/components/examples/ListSimpleNotificationHistoriesResponse"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/commonserviceitem/simplenotification/history/{request_id}": {
+      "get": {
+        "tags": [
+          "通知履歴"
+        ],
+        "summary": "通知履歴の取得",
+        "description": "指定した`request_id`に対応する通知履歴の取得。\n",
+        "operationId": "getNotificationHistory",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9]+$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetSimpleNotificationHistoryResponse"
+                },
+                "examples": {
+                  "通知履歴": {
+                    "$ref": "#/components/examples/GetSimpleNotificationHistoryResponse"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/commonserviceitem/simplenotification/sources": {
+      "get": {
+        "tags": [
+          "通知ルーティング"
+        ],
+        "summary": "通知元一覧の取得",
+        "description": "通知ルーティングに設定する通知元の情報を取得します。\n",
+        "operationId": "listSources",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListSourcesResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dummy/groupsettings": {
+      "get": {
+        "operationId": "getDummyGroupSettings",
+        "tags": [
+          "Dummy"
+        ],
+        "summary": "GroupSettingsモデル生成用ダミーエンドポイント",
+        "description": "このエンドポイントはKiotaでGroupSettingsモデルを生成するためのダミーです。実際のAPIには存在しません。",
+        "responses": {
+          "401": {
+            "description": "GroupSettings sample for model generation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupSettings"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dummy/routingsettings": {
+      "get": {
+        "operationId": "getDummyRoutingSettings",
+        "tags": [
+          "Dummy"
+        ],
+        "summary": "RoutingSettingsモデル生成用ダミーエンドポイント",
+        "description": "このエンドポイントはKiotaでRoutingSettingsモデルを生成するためのダミーです。実際のAPIには存在しません。",
+        "responses": {
+          "401": {
+            "description": "RoutingSettings sample for model generation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoutingSettings"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CommonServiceItem": {
+        "required": [
+          "ID",
+          "Name",
+          "Description",
+          "Settings",
+          "CreatedAt",
+          "ModifiedAt",
+          "Provider",
+          "Icon",
+          "Tags"
+        ],
+        "type": "object",
+        "properties": {
+          "Index": {
+            "type": "integer"
+          },
+          "ID": {
+            "type": "string"
+          },
+          "Name": {
+            "type": "string"
+          },
+          "Description": {
+            "type": "string"
+          },
+          "Settings": {
+            "$ref": "#/components/schemas/CommonServiceItemSettings"
+          },
+          "Provider": {
+            "$ref": "#/components/schemas/CommonServiceItemProvider"
+          },
+          "Icon": {
+            "$ref": "#/components/schemas/CommonServiceItemIcon"
+          },
+          "Tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "CreatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CommonServiceItemSettings": {
+        "$ref": "#/components/schemas/DestinationSettings"
+      },
+      "CommonServiceItemProvider": {
+        "required": [
+          "Class"
+        ],
+        "type": "object",
+        "properties": {
+          "Class": {
+            "enum": [
+              "saknoticedestination",
+              "saknoticegroup",
+              "saknoticerouting"
+            ],
+            "type": "string"
+          },
+          "Name": {
+            "type": "string"
+          },
+          "ServiceClass": {
+            "type": "string"
+          }
+        }
+      },
+      "CommonServiceItemIcon": {
+        "required": [
+          "ID"
+        ],
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string"
+          },
+          "URL": {
+            "type": "string"
+          },
+          "Name": {
+            "type": "string"
+          },
+          "Scope": {
+            "type": "string"
+          }
+        },
+        "nullable": true
+      },
+      "CommonServiceItemServiceClass": {
+        "enum": [
+          "cloud/saknoticedestination/2",
+          "cloud/saknoticegroup/2",
+          "cloud/saknoticerouting/2"
+        ],
+        "type": "string"
+      },
+      "ListCommonServiceItemsResponse": {
+        "required": [
+          "CommonServiceItems"
+        ],
+        "type": "object",
+        "properties": {
+          "From": {
+            "type": "integer"
+          },
+          "Count": {
+            "type": "integer"
+          },
+          "Total": {
+            "type": "integer"
+          },
+          "CommonServiceItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CommonServiceItem"
+            }
+          }
+        }
+      },
+      "PostCommonServiceItemRequest": {
+        "required": [
+          "CommonServiceItem"
+        ],
+        "type": "object",
+        "properties": {
+          "CommonServiceItem": {
+            "required": [
+              "Name",
+              "Description",
+              "Tags",
+              "Icon",
+              "Provider",
+              "Settings",
+              "ServiceClass"
+            ],
+            "type": "object",
+            "properties": {
+              "Name": {
+                "type": "string"
+              },
+              "Description": {
+                "type": "string"
+              },
+              "Settings": {
+                "$ref": "#/components/schemas/CommonServiceItemSettings"
+              },
+              "Provider": {
+                "$ref": "#/components/schemas/CommonServiceItemProvider"
+              },
+              "ServiceClass": {
+                "$ref": "#/components/schemas/CommonServiceItemServiceClass"
+              },
+              "Icon": {
+                "$ref": "#/components/schemas/CommonServiceItemIcon"
+              },
+              "Tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "nullable": true
+              }
+            }
+          }
+        }
+      },
+      "PutCommonServiceItemRequest": {
+        "required": [
+          "CommonServiceItem"
+        ],
+        "type": "object",
+        "properties": {
+          "CommonServiceItem": {
+            "required": [
+              "Name",
+              "Description",
+              "Tags",
+              "Icon"
+            ],
+            "type": "object",
+            "properties": {
+              "Name": {
+                "type": "string"
+              },
+              "Description": {
+                "type": "string"
+              },
+              "Tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "nullable": true
+              },
+              "Icon": {
+                "$ref": "#/components/schemas/CommonServiceItemIcon"
+              },
+              "Settings": {
+                "$ref": "#/components/schemas/CommonServiceItemSettings"
+              }
+            }
+          }
+        }
+      },
+      "DestinationSettings": {
+        "required": [
+          "Type",
+          "Value"
+        ],
+        "type": "object",
+        "properties": {
+          "Type": {
+            "enum": [
+              "email",
+              "webhook"
+            ],
+            "type": "string"
+          },
+          "Value": {
+            "type": "string"
+          },
+          "Disabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GroupSettings": {
+        "required": [
+          "Destinations"
+        ],
+        "type": "object",
+        "properties": {
+          "Destinations": {
+            "type": "array",
+            "items": {
+              "pattern": "^[0-9]{12}$",
+              "type": "string"
+            }
+          },
+          "Disabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RoutingSettings": {
+        "required": [
+          "SourceID",
+          "MatchLabels",
+          "TargetGroupID",
+          "PriorityRank"
+        ],
+        "type": "object",
+        "properties": {
+          "MatchLabels": {
+            "type": "array",
+            "items": {
+              "required": [
+                "Name",
+                "Value"
+              ],
+              "type": "object",
+              "properties": {
+                "Name": {
+                  "maxLength": 64,
+                  "pattern": "^[a-zA-Z0-9_-]*$",
+                  "type": "string"
+                },
+                "Value": {
+                  "maxLength": 64,
+                  "pattern": "^[\\x20-\\x7E]*$",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "SourceID": {
+            "pattern": "^[0-9]{1,12}$",
+            "type": "string"
+          },
+          "TargetGroupID": {
+            "pattern": "^[0-9]{1,12}$",
+            "type": "string"
+          },
+          "PriorityRank": {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "readOnly": true
+          }
+        }
+      },
+      "PutCommonServiceItemRoutingReorderRequest": {
+        "required": [
+          "Orders"
+        ],
+        "type": "object",
+        "properties": {
+          "Orders": {
+            "type": "array",
+            "items": {
+              "required": [
+                "RoutingID",
+                "PriorityRank"
+              ],
+              "type": "object",
+              "properties": {
+                "PriorityRank": {
+                  "maximum": 100,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "RoutingID": {
+                  "pattern": "^[0-9]{1,12}$",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "GetCommonServiceItemStatusResponse": {
+        "required": [
+          "NotificationStatus"
+        ],
+        "type": "object",
+        "properties": {
+          "NotificationStatus": {
+            "required": [
+              "IsValid",
+              "ModifiedAt"
+            ],
+            "type": "object",
+            "properties": {
+              "IsValid": {
+                "type": "boolean"
+              },
+              "ModifiedAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      },
+      "SendNotificationMessageRequest": {
+        "required": [
+          "Message"
+        ],
+        "type": "object",
+        "properties": {
+          "Message": {
+            "maxLength": 2048,
+            "type": "string"
+          }
+        }
+      },
+      "SendNotificationMessageResponse": {
+        "required": [
+          "is_ok"
+        ],
+        "type": "object",
+        "properties": {
+          "is_ok": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ListSimpleNotificationHistoriesResponse": {
+        "required": [
+          "NotificationHistories"
+        ],
+        "type": "object",
+        "properties": {
+          "NotificationHistories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationHistory"
+            }
+          }
+        }
+      },
+      "GetSimpleNotificationHistoryResponse": {
+        "required": [
+          "NotificationHistory"
+        ],
+        "type": "object",
+        "properties": {
+          "NotificationHistory": {
+            "$ref": "#/components/schemas/NotificationHistory"
+          }
+        }
+      },
+      "NotificationHistory": {
+        "required": [
+          "request_id",
+          "source_id",
+          "statuses",
+          "received_at",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "request_id": {
+            "type": "string"
+          },
+          "source_id": {
+            "type": "string"
+          },
+          "statuses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationStatus"
+            }
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "message": {
+            "$ref": "#/components/schemas/NotificationMessage"
+          }
+        }
+      },
+      "NotificationStatus": {
+        "required": [
+          "id",
+          "status",
+          "error_info",
+          "notification_request_id",
+          "group_id",
+          "destination_id",
+          "created_at",
+          "updated_at"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              0,
+              1,
+              2,
+              3,
+              9
+            ],
+            "type": "integer",
+            "description": "- 0: 未送信\n- 1: 送信中\n- 2: 送信済\n- 3: スキップ\n- 9: 送信失敗\n"
+          },
+          "error_info": {
+            "type": "string"
+          },
+          "notification_request_id": {
+            "type": "string"
+          },
+          "group_id": {
+            "pattern": "^[0-9]{12}$",
+            "type": "string"
+          },
+          "destination_id": {
+            "pattern": "^[0-9]{12}$",
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "NotificationMessage": {
+        "required": [
+          "body",
+          "color",
+          "color_code",
+          "icon_url",
+          "image_url",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "color_code": {
+            "type": "string"
+          },
+          "icon_url": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "ListSourcesResponse": {
+        "required": [
+          "Sources"
+        ],
+        "type": "object",
+        "properties": {
+          "Sources": {
+            "type": "array",
+            "items": {
+              "required": [
+                "id",
+                "name"
+              ],
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "is_fatal": {
+            "type": "boolean"
+          },
+          "serial": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "error_code": {
+            "type": "string"
+          },
+          "error_msg": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "examples": {
+      "ListCommonServiceItemsResponseDestinations": {
+        "value": {
+          "From": "0",
+          "Count": "2",
+          "Total": "2",
+          "CommonServiceItems": [
+            {
+              "Index": "0",
+              "ID": "123700010001",
+              "Name": "mail destination",
+              "Description": "メール通知先の説明",
+              "Provider": {
+                "Class": "saknoticedestination"
+              },
+              "Settings": {
+                "Type": "email",
+                "Value": "user@example.com"
+              },
+              "CreatedAt": "2025-12-18T12:00:00+09:00",
+              "ModifiedAt": "2025-12-18T12:00:00+09:00",
+              "Icon": {
+                "ID": "123700100001"
+              },
+              "Tags": []
+            },
+            {
+              "Index": "1",
+              "ID": "123700010002",
+              "Name": "webhook destination",
+              "Description": "Webhook通知先の説明",
+              "Provider": {
+                "Class": "saknoticedestination"
+              },
+              "Settings": {
+                "Type": "webhook",
+                "Value": "https://example.com/notify"
+              },
+              "CreatedAt": "2025-12-18T12:00:00+09:00",
+              "ModifiedAt": "2025-12-18T12:00:00+09:00",
+              "Icon": {
+                "ID": "123700100001"
+              },
+              "Tags": []
+            }
+          ]
+        }
+      },
+      "ListCommonServiceItemsResponseGroups": {
+        "value": {
+          "From": "0",
+          "Count": "1",
+          "Total": "1",
+          "CommonServiceItems": [
+            {
+              "Index": "0",
+              "ID": "123700020001",
+              "Name": "test group",
+              "Description": "通知先グループの説明",
+              "Provider": {
+                "Class": "saknoticegroup"
+              },
+              "Settings": {
+                "Destinations": [
+                  "123700010001",
+                  "123700010002"
+                ]
+              },
+              "CreatedAt": "2025-12-18T12:00:00+09:00",
+              "ModifiedAt": "2025-12-18T12:00:00+09:00",
+              "Icon": {
+                "ID": "123700100001"
+              },
+              "Tags": []
+            }
+          ]
+        }
+      },
+      "ListCommonServiceItemsResponseRoutings": {
+        "value": {
+          "From": "0",
+          "Count": "1",
+          "Total": "1",
+          "CommonServiceItems": [
+            {
+              "Index": "0",
+              "ID": "123700030001",
+              "Name": "test routing",
+              "Description": "通知ルーティングの説明",
+              "Provider": {
+                "Class": "saknoticerouting"
+              },
+              "Settings": {
+                "SourceID": "1",
+                "MatchLabels": [
+                  {
+                    "Name": "environment",
+                    "Value": "development"
+                  }
+                ],
+                "TargetGroupID": "123700020001",
+                "PriorityRank": "1"
+              },
+              "CreatedAt": "2025-12-18T12:00:00+09:00",
+              "ModifiedAt": "2025-12-18T12:00:00+09:00",
+              "Icon": {
+                "ID": "123700100001"
+              },
+              "Tags": []
+            }
+          ]
+        }
+      },
+      "GetCommonServiceItemsResponseDestination": {
+        "value": {
+          "CommonServiceItem": {
+            "ID": "123700010001",
+            "Name": "mail destination",
+            "Description": "メール通知先の説明",
+            "Provider": {
+              "Class": "saknoticedestination"
+            },
+            "Settings": {
+              "Type": "email",
+              "Value": "user@example.com"
+            },
+            "CreatedAt": "2025-12-18T12:00:00+09:00",
+            "ModifiedAt": "2025-12-18T12:00:00+09:00",
+            "Icon": {
+              "ID": "123700100001"
+            },
+            "Tags": []
+          }
+        }
+      },
+      "GetCommonServiceItemsResponseGroup": {
+        "value": {
+          "CommonServiceItem": {
+            "ID": "123700020001",
+            "Name": "test group",
+            "Description": "通知先グループの説明",
+            "Provider": {
+              "Class": "saknoticegroup"
+            },
+            "Settings": {
+              "Destinations": [
+                "123700010001",
+                "123700010002"
+              ]
+            },
+            "CreatedAt": "2025-12-18T12:00:00+09:00",
+            "ModifiedAt": "2025-12-18T12:00:00+09:00",
+            "Icon": {
+              "ID": "123700100001"
+            },
+            "Tags": []
+          }
+        }
+      },
+      "GetCommonServiceItemsResponseRouting": {
+        "value": {
+          "CommonServiceItem": {
+            "ID": "123700030001",
+            "Name": "test routing",
+            "Description": "通知ルーティングの説明",
+            "Provider": {
+              "Class": "saknoticerouting"
+            },
+            "Settings": {
+              "SourceID": "1",
+              "MatchLabels": [
+                {
+                  "Name": "environment",
+                  "Value": "development"
+                }
+              ],
+              "TargetGroupID": "123700020001",
+              "PriorityRank": "1"
+            },
+            "CreatedAt": "2025-12-18T12:00:00+09:00",
+            "ModifiedAt": "2025-12-18T12:00:00+09:00",
+            "Icon": {
+              "ID": "123700100001"
+            },
+            "Tags": []
+          }
+        }
+      },
+      "PostCommonServiceItemRequestDestination": {
+        "value": {
+          "CommonServiceItem": {
+            "Name": "mail destination",
+            "Description": "メール通知先の説明",
+            "Tags": [],
+            "Icon": {
+              "ID": "123700100001"
+            },
+            "Provider": {
+              "Class": "saknoticedestination"
+            },
+            "Settings": {
+              "Type": "email",
+              "Value": "user@example.com"
+            },
+            "ServiceClass": "cloud/saknoticedestination/2"
+          }
+        }
+      },
+      "PostCommonServiceItemRequestGroup": {
+        "value": {
+          "CommonServiceItem": {
+            "Name": "test group",
+            "Description": "通知先グループの説明",
+            "Tags": [],
+            "Icon": {
+              "ID": "123700100001"
+            },
+            "Provider": {
+              "Class": "saknoticegroup"
+            },
+            "Settings": {
+              "Destinations": [
+                "123700010001"
+              ]
+            },
+            "ServiceClass": "cloud/saknoticegroup/2"
+          }
+        }
+      },
+      "PostCommonServiceItemRequestRouting": {
+        "value": {
+          "CommonServiceItem": {
+            "Name": "test routing",
+            "Description": "通知ルーティングの説明",
+            "Tags": [],
+            "Icon": {
+              "ID": "123700100001"
+            },
+            "Provider": {
+              "Class": "saknoticerouting"
+            },
+            "Settings": {
+              "SourceID": "1",
+              "MatchLabels": [
+                {
+                  "Name": "environment",
+                  "Value": "development"
+                }
+              ],
+              "TargetGroupID": "123700020001"
+            },
+            "ServiceClass": "cloud/saknoticerouting/2"
+          }
+        }
+      },
+      "PutCommonServiceItemRequestDestination": {
+        "value": {
+          "CommonServiceItem": {
+            "Name": "mail destination",
+            "Description": "メール通知先の説明",
+            "Tags": [],
+            "Icon": {
+              "ID": "123700100001"
+            },
+            "Settings": {
+              "Type": "email",
+              "Value": "user@example.com"
+            }
+          }
+        }
+      },
+      "PutCommonServiceItemRequestGroup": {
+        "value": {
+          "CommonServiceItem": {
+            "Name": "test group",
+            "Description": "通知先グループの説明",
+            "Tags": [],
+            "Icon": {
+              "ID": "123700100001"
+            },
+            "Settings": {
+              "Destinations": [
+                "123700010001"
+              ]
+            }
+          }
+        }
+      },
+      "PutCommonServiceItemRequestRouting": {
+        "value": {
+          "CommonServiceItem": {
+            "Name": "test routing",
+            "Description": "通知ルーティングの説明",
+            "Tags": [],
+            "Icon": {
+              "ID": "123700100001"
+            },
+            "Settings": {
+              "SourceID": "1",
+              "MatchLabels": [
+                {
+                  "Name": "environment",
+                  "Value": "development"
+                }
+              ],
+              "TargetGroupID": "123700020001"
+            }
+          }
+        }
+      },
+      "ListSimpleNotificationHistoriesResponse": {
+        "value": {
+          "NotificationHistories": [
+            {
+              "request_id": "12345",
+              "source_id": "",
+              "statuses": [
+                {
+                  "id": "67890",
+                  "status": "2",
+                  "error_info": "",
+                  "notification_request_id": "12345",
+                  "group_id": "123700020001",
+                  "destination_id": "123700010001",
+                  "created_at": "2025-12-18T12:00:00+09:00",
+                  "updated_at": "2025-12-18T12:05:00+09:00"
+                }
+              ],
+              "received_at": "2025-12-18T12:00:00+09:00",
+              "message": {
+                "body": "This is a test notification message.",
+                "color": "default",
+                "color_code": "#7d7d7d",
+                "icon_url": "https://example.com/icon.png",
+                "image_url": "https://example.com/image.png",
+                "title": "Test Notification"
+              }
+            }
+          ]
+        }
+      },
+      "GetSimpleNotificationHistoryResponse": {
+        "value": {
+          "NotificationHistory": {
+            "request_id": "12345",
+            "source_id": "",
+            "statuses": [
+              {
+                "id": "67890",
+                "status": "2",
+                "error_info": "",
+                "notification_request_id": "12345",
+                "group_id": "123700020001",
+                "destination_id": "123700010001",
+                "created_at": "2025-12-18T12:00:00+09:00",
+                "updated_at": "2025-12-18T12:05:00+09:00"
+              }
+            ],
+            "received_at": "2025-12-18T12:00:00+09:00",
+            "message": {
+              "body": "This is a test notification message.",
+              "color": "default",
+              "color_code": "#7d7d7d",
+              "icon_url": "https://example.com/icon.png",
+              "image_url": "https://example.com/image.png",
+              "title": "Test Notification"
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "通知送信",
+      "description": "通知送信関連のエンドポイント"
+    },
+    {
+      "name": "通知履歴",
+      "description": "通知履歴関連のエンドポイント"
+    },
+    {
+      "name": "通知先",
+      "description": "通知先関連のエンドポイント"
+    },
+    {
+      "name": "通知先グループ",
+      "description": "通知先グループ関連のエンドポイント"
+    },
+    {
+      "name": "通知ルーティング",
+      "description": "通知ルーティング関連のエンドポイント"
+    }
+  ]
+}
