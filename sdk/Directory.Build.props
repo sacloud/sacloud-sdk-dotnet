@@ -11,4 +11,10 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(MSBuildProjectDirectory)' == '$(MSBuildThisFileDirectory)$(MSBuildProjectName)/src'">
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(MSBuildProjectDirectory)' == '$(MSBuildThisFileDirectory)$(MSBuildProjectName)/src'">
+		<None Include="$(MSBuildProjectDirectory)/../README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
 </Project>
