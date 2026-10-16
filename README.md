@@ -15,6 +15,11 @@ sacloud-sdk-dotnetは、[さくらのクラウド](https://cloud.sakura.ad.jp/)�
 さくらのクラウドが提供している各サービスのAPIを操作するためのクライアントライブラリ群が入っています。
 インストール方法や利用方法に関しては各サービスのREADMEを参照してください。
 
+対応言語 / ランタイムは以下の環境で動くように開発されています。
+
+- C# 7.3 以降
+- .NET Standard 2.0 対応
+
 現在サポートしているサービスは以下となります。
 
 - Addon
@@ -32,6 +37,12 @@ sacloud-sdk-dotnetは、[さくらのクラウド](https://cloud.sakura.ad.jp/)�
 - SimpleMQ
 - Simple Notification
 - Workflows
+
+Sharedは各モジュールで共通する処理を担当するモジュールです。
+
+## パッケージの管理
+
+Todo: 管理用スクリプトの例を追加する
 
 ## 実装予定
 
