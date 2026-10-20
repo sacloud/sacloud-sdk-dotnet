@@ -1,6 +1,20 @@
 <Project>
 	<PropertyGroup>
 		<RootNamespace>Sacloud.Sdk.$(MSBuildProjectName)</RootNamespace>
+		<AssemblyTitle>SAKURA Cloud Sacloud.Sdk.$(MSBuildProjectName) Client library</AssemblyTitle>
 		<PackageId>Sacloud.Sdk.$(MSBuildProjectName)</PackageId>
+		<Authors>SAKURA internet Inc.</Authors>
+		<Copyright>Copyright $([System.DateTime]::UtcNow.ToString(yyyy)) SAKURA internet Inc.</Copyright>
+		<PackageTags>Sakura;Sacloud;Cloud;Client</PackageTags>
+		<PackageProjectUrl>https://github.com/sacloud/sacloud-sdk-dotnet</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/sacloud/sacloud-sdk-dotnet</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(MSBuildProjectDirectory)' == '$(MSBuildThisFileDirectory)$(MSBuildProjectName)/src'">
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(MSBuildProjectDirectory)' == '$(MSBuildThisFileDirectory)$(MSBuildProjectName)/src'">
+		<None Include="$(MSBuildProjectDirectory)/../README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
 </Project>
