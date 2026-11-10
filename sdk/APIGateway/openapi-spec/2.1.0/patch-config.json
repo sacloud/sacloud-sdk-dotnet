@@ -1,0 +1,11 @@
+{
+  "input": "apigw-api.yaml",
+  "patches": [
+    {
+      "type": "simplify-allof"
+    },
+    {
+      "type": "extract-array-inline-items"
+    }
+  ]
+}

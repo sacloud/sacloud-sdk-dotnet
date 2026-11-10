@@ -103,7 +103,7 @@ public class ScheduleDestructionRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new ScheduleDestructionRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedScheduleDestructionKey();
+        var body = new WrappedScheduleDestructionKeyRequest();
 
         var requestInfo = builder.ToPostRequestInformation(body);
 
@@ -166,9 +166,10 @@ public class ScheduleDestructionRequestBuilderTests
         };
         var builder = new ScheduleDestructionRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
         var body = CreateValidWrappedScheduleDestructionKey();
-        var expectedResult = new MemoryStream();
-        requestAdapter.SendPrimitiveAsync<Stream>(
+        var expectedResult = new WrappedKeyScheduledDestruction();
+        requestAdapter.SendAsync<WrappedKeyScheduledDestruction>(
             Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<WrappedKeyScheduledDestruction>>(),
             Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
             Arg.Any<CancellationToken>())
             .Returns(expectedResult);
@@ -194,9 +195,10 @@ public class ScheduleDestructionRequestBuilderTests
         };
         var builder = new ScheduleDestructionRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
         var body = CreateValidWrappedScheduleDestructionKey();
-        var expectedResult = new MemoryStream();
-        requestAdapter.SendPrimitiveAsync<Stream>(
+        var expectedResult = new WrappedKeyScheduledDestruction();
+        requestAdapter.SendAsync<WrappedKeyScheduledDestruction>(
             Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<WrappedKeyScheduledDestruction>>(),
             Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
             Arg.Any<CancellationToken>())
             .Returns(expectedResult);
@@ -240,8 +242,9 @@ public class ScheduleDestructionRequestBuilderTests
         var body = CreateValidWrappedScheduleDestructionKey();
         var expectedException = new ApiError { ResponseStatusCode = 400 };
 
-        requestAdapter.SendPrimitiveAsync<Stream>(
+        requestAdapter.SendAsync<WrappedKeyScheduledDestruction>(
             Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<WrappedKeyScheduledDestruction>>(),
             Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
             Arg.Any<CancellationToken>()
         ).ThrowsAsync(expectedException);
@@ -273,8 +276,9 @@ public class ScheduleDestructionRequestBuilderTests
         var body = CreateValidWrappedScheduleDestructionKey();
         var expectedException = new Exception("Test error");
 
-        requestAdapter.SendPrimitiveAsync<Stream>(
+        requestAdapter.SendAsync<WrappedKeyScheduledDestruction>(
             Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<WrappedKeyScheduledDestruction>>(),
             Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
             Arg.Any<CancellationToken>()
         ).ThrowsAsync(expectedException);
@@ -310,7 +314,7 @@ public class ScheduleDestructionRequestBuilderTests
             { pathParameterKey, pathParameterValue }
         };
         var builder = new ScheduleDestructionRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedScheduleDestructionKey();
+        var body = new WrappedScheduleDestructionKeyRequest();
 
         var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
         {
@@ -369,7 +373,7 @@ public class ScheduleDestructionRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new ScheduleDestructionRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedScheduleDestructionKey
+        var body = new WrappedScheduleDestructionKeyRequest
         {
             Key = null
         };
@@ -386,7 +390,7 @@ public class ScheduleDestructionRequestBuilderTests
     /// PostAsyncのリクエストボディのKey.PendingDaysパラメータがnullの場合に例外がスローされることを確認
     /// </summary>
     [Fact]
-    public async Task PostAsync_WithNullPendingDaysParameter_ThrowsValidationException()
+    public async Task PostAsync_WithNullPendingDays_IsAllowed()
     {
         var requestAdapter = Substitute.For<IRequestAdapter>();
         requestAdapter.BaseUrl = "https://api.example.com";
@@ -396,12 +400,58 @@ public class ScheduleDestructionRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new ScheduleDestructionRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedScheduleDestructionKey
+        var body = new WrappedScheduleDestructionKeyRequest
         {
-            Key = new ScheduleDestructionKey
+            Key = new ScheduleDestructionKeyRequest
             {
                 PendingDays = null
             }
+        };
+
+        await builder.PostAsync(body);
+    }
+
+    /// <summary>
+    /// PostAsyncのPendingDaysが上限の90日の場合に許可されることを確認
+    /// </summary>
+    [Fact]
+    public async Task PostAsync_WithMaximumPendingDays_IsAllowed()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" },
+            { "resource_id", "test-resource-id" }
+        };
+        var builder = new ScheduleDestructionRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new WrappedScheduleDestructionKeyRequest
+        {
+            Key = new ScheduleDestructionKeyRequest { PendingDays = 90 }
+        };
+
+        await builder.PostAsync(body);
+    }
+
+    /// <summary>
+    /// PostAsyncのPendingDaysがOpenAPIの許容範囲外の場合にValidationExceptionがスローされることを確認
+    /// </summary>
+    [Theory]
+    [InlineData(6)]
+    [InlineData(91)]
+    public async Task PostAsync_WithOutOfRangePendingDays_ThrowsValidationException(int pendingDays)
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" },
+            { "resource_id", "test-resource-id" }
+        };
+        var builder = new ScheduleDestructionRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new WrappedScheduleDestructionKeyRequest
+        {
+            Key = new ScheduleDestructionKeyRequest { PendingDays = pendingDays }
         };
 
         var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
@@ -409,17 +459,17 @@ public class ScheduleDestructionRequestBuilderTests
             await builder.PostAsync(body);
         });
 
-        Assert.Equal("PendingDaysが入力されていません。", exception.Message);
+        Assert.Equal("PendingDaysの値は7以上90以下で入力してください。", exception.Message);
     }
 
     /// <summary>
     /// バリデーションを通過する有効なWrappedScheduleDestructionKeyを作成するヘルパーメソッド
     /// </summary>
-    private static WrappedScheduleDestructionKey CreateValidWrappedScheduleDestructionKey()
+    private static WrappedScheduleDestructionKeyRequest CreateValidWrappedScheduleDestructionKey()
     {
-        return new WrappedScheduleDestructionKey
+        return new WrappedScheduleDestructionKeyRequest
         {
-            Key = new ScheduleDestructionKey
+            Key = new ScheduleDestructionKeyRequest
             {
                 PendingDays = 7
             }

@@ -5,7 +5,6 @@ using Microsoft.Kiota.Abstractions.Serialization;
 using System.Collections.Generic;
 using System.IO;
 using System;
-using System.ComponentModel.DataAnnotations;
 namespace Sacloud.Sdk.KMS.Models
 {
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
@@ -15,20 +14,12 @@ namespace Sacloud.Sdk.KMS.Models
     {
         /// <summary>Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.</summary>
         public IDictionary<string, object> AdditionalData { get; set; }
-        /// <summary>The Algo property</summary>
-        [Display(Name = "Algo")]
-        [LocalizedEnumDataType(typeof(global::Sacloud.Sdk.KMS.Models.KeyEncryptAlgoEnum))]
-        public global::Sacloud.Sdk.KMS.Models.KeyEncryptAlgoEnum? Algo { get; set; }
-        /// <summary>Base64でエンコードされた平文</summary>
+        /// <summary>Base64 エンコードされた平文</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        [Display(Name = "Plain")]
-        [LocalizedRequired]
         public string? Plain { get; set; }
 #nullable restore
 #else
-        [Display(Name = "Plain")]
-        [LocalizedRequired]
         public string Plain { get; set; }
 #endif
         /// <summary>
@@ -56,7 +47,6 @@ namespace Sacloud.Sdk.KMS.Models
         {
             return new Dictionary<string, Action<IParseNode>>
             {
-                { "Algo", n => { Algo = n.GetEnumValue<global::Sacloud.Sdk.KMS.Models.KeyEncryptAlgoEnum>(); } },
                 { "Plain", n => { Plain = n.GetStringValue(); } },
             };
         }
@@ -67,7 +57,6 @@ namespace Sacloud.Sdk.KMS.Models
         public virtual void Serialize(ISerializationWriter writer)
         {
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
-            writer.WriteEnumValue<global::Sacloud.Sdk.KMS.Models.KeyEncryptAlgoEnum>("Algo", Algo);
             writer.WriteStringValue("Plain", Plain);
             writer.WriteAdditionalData(AdditionalData);
         }

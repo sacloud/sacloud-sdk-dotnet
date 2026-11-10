@@ -1,0 +1,2406 @@
+openapi: 3.0.3
+info:
+  title: KMS/SecretManager/CloudHSM API
+  version: 1.2.0
+  description: さくらのクラウド KMS / SecretManager / CloudHSM API
+servers:
+- url: https://secure.sakura.ad.jp/cloud/zone/is1a/api/cloud/1.1
+  description: 石狩第1ゾーン
+- url: https://secure.sakura.ad.jp/cloud/zone/is1b/api/cloud/1.1
+  description: 石狩第2ゾーン
+- url: https://secure.sakura.ad.jp/cloud/zone/is1c/api/cloud/1.1
+  description: 石狩第3ゾーン
+- url: https://secure.sakura.ad.jp/cloud/zone/tk1a/api/cloud/1.1
+  description: 東京第1ゾーン
+- url: https://secure.sakura.ad.jp/cloud/zone/tk1b/api/cloud/1.1
+  description: 東京第2ゾーン
+paths:
+  /cloudhsm/cloudhsms:
+    get:
+      operationId: listCloudHSMs
+      parameters:
+      - name: Count
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: From
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - cloudhsm
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCloudHSMList'
+          description: ''
+    post:
+      operationId: createCloudHSM
+      tags:
+      - cloudhsm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedCreateCloudHSMRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedCreateCloudHSM'
+          description: ''
+  /cloudhsm/cloudhsms/{cloudhsm_resource_id}/clients:
+    get:
+      operationId: listCloudHSMClients
+      parameters:
+      - name: Count
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: From
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: path
+        name: cloudhsm_resource_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - cloudhsm
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCloudHSMClientList'
+          description: ''
+    post:
+      operationId: createCloudHSMClient
+      parameters:
+      - in: path
+        name: cloudhsm_resource_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - cloudhsm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedCreateCloudHSMClientRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedCreateCloudHSMClient'
+          description: ''
+  /cloudhsm/cloudhsms/{cloudhsm_resource_id}/clients/{id}:
+    get:
+      operationId: readCloudHSMClient
+      parameters:
+      - in: path
+        name: cloudhsm_resource_id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this CloudHSMクライアント.
+        required: true
+      tags:
+      - cloudhsm
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedCloudHSMClient'
+          description: ''
+    put:
+      operationId: updateCloudHSMClient
+      parameters:
+      - in: path
+        name: cloudhsm_resource_id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this CloudHSMクライアント.
+        required: true
+      tags:
+      - cloudhsm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedCloudHSMClientRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedCloudHSMClient'
+          description: ''
+    delete:
+      operationId: deleteCloudHSMClient
+      parameters:
+      - in: path
+        name: cloudhsm_resource_id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this CloudHSMクライアント.
+        required: true
+      tags:
+      - cloudhsm
+      responses:
+        '204':
+          description: No response body
+  /cloudhsm/cloudhsms/{resource_id}:
+    get:
+      operationId: readCloudHSM
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - cloudhsm
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedCloudHSM'
+          description: ''
+    put:
+      operationId: updateCloudHSM
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - cloudhsm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedCloudHSMRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedCloudHSM'
+          description: ''
+    delete:
+      operationId: deleteCloudHSM
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - cloudhsm
+      responses:
+        '204':
+          description: No response body
+  /cloudhsm/cloudhsms/{resource_id}/peers:
+    get:
+      operationId: listCloudHSMPeers
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - cloudhsm
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedPeerList'
+          description: ''
+    post:
+      operationId: createCloudHSMPeer
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - cloudhsm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedPeerRequest'
+        required: true
+      responses:
+        '204':
+          description: No response body
+  /cloudhsm/cloudhsms/{resource_id}/peers/{peer_id}:
+    delete:
+      operationId: deleteCloudHSMPeer
+      parameters:
+      - in: path
+        name: peer_id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - cloudhsm
+      responses:
+        '204':
+          description: No response body
+  /cloudhsm/licenses:
+    get:
+      operationId: listCloudHSMLicenses
+      parameters:
+      - name: Count
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: From
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - cloudhsm
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCloudHSMSoftwareLicenseList'
+          description: ''
+    post:
+      operationId: createCloudHSMLicense
+      tags:
+      - cloudhsm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedCreateCloudHSMSoftwareLicenseRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedCreateCloudHSMSoftwareLicense'
+          description: ''
+  /cloudhsm/licenses/{license_resource_id}/documents:
+    get:
+      operationId: listCloudHSMDocuments
+      parameters:
+      - name: Count
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: From
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: path
+        name: license_resource_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - cloudhsm
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCloudHSMDocumentList'
+          description: ''
+  /cloudhsm/licenses/{license_resource_id}/documents/{id}/download:
+    post:
+      operationId: downloadCloudHSMDocument
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this CloudHSMドキュメント.
+        required: true
+      - in: path
+        name: license_resource_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - cloudhsm
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedCloudHSMDocumentDownload'
+          description: ''
+  /cloudhsm/licenses/{resource_id}:
+    get:
+      operationId: readCloudHSMLicense
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - cloudhsm
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedCloudHSMSoftwareLicense'
+          description: ''
+    put:
+      operationId: updateCloudHSMLicense
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - cloudhsm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedCloudHSMSoftwareLicenseRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedCloudHSMSoftwareLicense'
+          description: ''
+    delete:
+      operationId: deleteCloudHSMLicense
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - cloudhsm
+      responses:
+        '204':
+          description: No response body
+  /kms/keys:
+    get:
+      operationId: listKeys
+      parameters:
+      - name: Count
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: From
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - kms-key
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedKeyList'
+          description: ''
+    post:
+      operationId: createKey
+      tags:
+      - kms-key
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedCreateKeyRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedCreateKeyResponse'
+          description: ''
+  /kms/keys/{resource_id}:
+    get:
+      operationId: readKey
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - kms-key
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedKey'
+          description: ''
+    put:
+      operationId: updateKey
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - kms-key
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedKeyRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedKey'
+          description: ''
+    delete:
+      operationId: deleteKey
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - kms-key
+      responses:
+        '204':
+          description: No response body
+  /kms/keys/{resource_id}/decrypt:
+    post:
+      operationId: decryptDataWithKey
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - kms-key
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedDecryptionRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedKeyPlain'
+          description: ''
+  /kms/keys/{resource_id}/encrypt:
+    post:
+      operationId: encryptDataWithKey
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - kms-key
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedEncryptionRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedKeyCipher'
+          description: ''
+  /kms/keys/{resource_id}/rotate:
+    post:
+      operationId: rotateKey
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - kms-key
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedKey'
+          description: ''
+  /kms/keys/{resource_id}/schedule-destruction:
+    post:
+      operationId: scheduleKeyDestruction
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - kms-key
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedScheduleDestructionKeyRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedKeyScheduledDestruction'
+          description: ''
+  /kms/keys/{resource_id}/status:
+    post:
+      operationId: changeKeyStatus
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - kms-key
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedChangeKeyStateRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedChangeKeyState'
+          description: ''
+  /secretmanager/vaults:
+    get:
+      operationId: listVaults
+      parameters:
+      - name: Count
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: From
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - secretmanager-vault
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVaultList'
+          description: ''
+    post:
+      operationId: createVault
+      tags:
+      - secretmanager-vault
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedCreateVaultRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedCreateVault'
+          description: ''
+  /secretmanager/vaults/{resource_id}:
+    get:
+      operationId: readVault
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - secretmanager-vault
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedVault'
+          description: ''
+    put:
+      operationId: updateVault
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - secretmanager-vault
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedVaultRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedVault'
+          description: ''
+    delete:
+      operationId: deleteVault
+      parameters:
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+          title: リソースID
+        required: true
+      tags:
+      - secretmanager-vault
+      responses:
+        '204':
+          description: No response body
+  /secretmanager/vaults/{vault_resource_id}/secrets:
+    get:
+      operationId: listVaultSecrets
+      parameters:
+      - name: Count
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: From
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: path
+        name: vault_resource_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - secretmanager-vault
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSecretResponseList'
+          description: ''
+    post:
+      operationId: createVaultSecret
+      description: 新しいバージョンを作成します。シークレット値は最新を含む50世代まで保持され、より古い世代は削除されます。
+      parameters:
+      - in: path
+        name: vault_resource_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - secretmanager-vault
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedCreateSecretRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedCreateSecretResponse'
+          description: ''
+    delete:
+      operationId: deleteVaultSecret
+      parameters:
+      - in: path
+        name: vault_resource_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - secretmanager-vault
+      responses:
+        '204':
+          description: No response body
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedDeleteSecretRequest'
+        required: true
+  /secretmanager/vaults/{vault_resource_id}/secrets/unveil:
+    post:
+      operationId: unveilSecret
+      description: シークレット値を取得します。取得できるのは最新を含む50世代までです。
+      parameters:
+      - in: path
+        name: vault_resource_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - secretmanager-vault
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrappedUnveilRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WrappedUnveilResponse'
+          description: ''
+security:
+- basicAuth: []
+components:
+  schemas:
+    ChangeKeyState:
+      type: object
+      description: 鍵の状態変更
+      properties:
+        Status:
+          enum:
+          - active
+          - restricted
+          - suspended
+          type: string
+          description: |-
+            * `active` - 有効
+            * `restricted` - 制限付き
+            * `suspended` - 一時停止
+          x-spec-enum-id: c07b47aad4f4d40c
+      required:
+      - Status
+    ChangeKeyStateRequest:
+      type: object
+      description: 鍵の状態変更
+      properties:
+        Status:
+          enum:
+          - active
+          - restricted
+          - suspended
+          type: string
+          description: |-
+            * `active` - 有効
+            * `restricted` - 制限付き
+            * `suspended` - 一時停止
+          x-spec-enum-id: c07b47aad4f4d40c
+      required:
+      - Status
+    CloudHSM:
+      type: object
+      properties:
+        ID:
+          type: string
+          readOnly: true
+          example: '110000000000'
+        CreatedAt:
+          $ref: '#/components/schemas/DateTime'
+        ModifiedAt:
+          $ref: '#/components/schemas/DateTime'
+        ServiceClass:
+          enum:
+          - cloud/cloudhsm/partition
+          type: string
+          description: '* `cloud/cloudhsm/partition` - Type-L7'
+          x-spec-enum-id: aec33bb088a5c108
+          readOnly: true
+          title: サービスクラス
+        Availability:
+          enum:
+          - precreate
+          - available
+          - discontinued
+          type: string
+          description: |-
+            * `precreate` - 準備中
+            * `available` - 利用可能
+            * `discontinued` - 廃止
+          x-spec-enum-id: 329069c36229258c
+          readOnly: true
+          title: 状態
+        Name:
+          type: string
+          title: 名前
+          maxLength: 255
+        Description:
+          type: string
+          title: 説明
+        Tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          nullable: true
+        IPv4NetworkAddress:
+          type: string
+          title: IPv4ネットワークアドレス
+          example: 192.168.100.0
+        IPv4PrefixLength:
+          type: integer
+          title: IPv4プレフィックス長
+          example: 24
+        IPv4Address:
+          type: string
+          readOnly: true
+          example: 192.168.100.11
+        LocalRouter:
+          allOf:
+          - $ref: '#/components/schemas/LocalRouter'
+          nullable: true
+          readOnly: true
+        InitialData:
+          allOf:
+          - $ref: '#/components/schemas/CloudHSMInitialData'
+          nullable: true
+          readOnly: true
+      required:
+      - Availability
+      - CreatedAt
+      - Description
+      - ID
+      - InitialData
+      - IPv4Address
+      - IPv4NetworkAddress
+      - IPv4PrefixLength
+      - LocalRouter
+      - ModifiedAt
+      - Name
+      - ServiceClass
+      - Tags
+    CloudHSMClient:
+      type: object
+      properties:
+        ID:
+          type: string
+          readOnly: true
+          example: 01JP9500000000000000000000
+        CreatedAt:
+          $ref: '#/components/schemas/DateTime'
+        ModifiedAt:
+          $ref: '#/components/schemas/DateTime'
+        Availability:
+          enum:
+          - precreate
+          - available
+          - discontinued
+          type: string
+          description: |-
+            * `precreate` - 準備中
+            * `available` - 利用可能
+            * `discontinued` - 廃止
+          x-spec-enum-id: 329069c36229258c
+          readOnly: true
+          title: 状態
+        Name:
+          type: string
+          title: 名前
+          maxLength: 255
+        Certificate:
+          type: string
+          readOnly: true
+          title: 証明書
+          example: '-----BEGIN CERTIFICATE-----\nMIIC0DCCAbigAwIBAgIJAJ.....\n-----END
+            CERTIFICATE-----'
+      required:
+      - Availability
+      - Certificate
+      - CreatedAt
+      - ID
+      - ModifiedAt
+      - Name
+    CloudHSMClientRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          minLength: 1
+          title: 名前
+          maxLength: 255
+      required:
+      - Name
+    CloudHSMDocument:
+      type: object
+      properties:
+        ID:
+          type: string
+          example: '110000000000'
+        CreatedAt:
+          $ref: '#/components/schemas/DateTime'
+        ModifiedAt:
+          $ref: '#/components/schemas/DateTime'
+        Name:
+          type: string
+      required:
+      - CreatedAt
+      - ID
+      - ModifiedAt
+      - Name
+    CloudHSMDocumentDownload:
+      type: object
+      properties:
+        URL:
+          type: string
+          format: uri
+      required:
+      - URL
+    CloudHSMInitialData:
+      type: object
+      properties:
+        PartitionName:
+          type: string
+          title: HSM 上のパーティション名
+        Certificate:
+          type: string
+          title: HSM のサーバー証明書
+          example: '-----BEGIN CERTIFICATE-----\nMIIC0DCCAbigAwIBAgIJAJ.....\n-----END
+            CERTIFICATE-----'
+        PartitionID:
+          type: string
+          title: HSM 上のパーティション ID
+      required:
+      - Certificate
+      - PartitionID
+      - PartitionName
+    CloudHSMPeer:
+      type: object
+      properties:
+        ID:
+          type: string
+          example: '110000000000'
+        SecretKey:
+          type: string
+          example: PAIRINGSECRETKEY
+        Enabled:
+          type: boolean
+        Description:
+          type: string
+      required:
+      - ID
+      - SecretKey
+    CloudHSMRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          minLength: 1
+          title: 名前
+          maxLength: 255
+        Description:
+          type: string
+          title: 説明
+        Tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          nullable: true
+        IPv4NetworkAddress:
+          type: string
+          minLength: 1
+          title: IPv4ネットワークアドレス
+          example: 192.168.100.0
+        IPv4PrefixLength:
+          type: integer
+          title: IPv4プレフィックス長
+          example: 24
+      required:
+      - IPv4NetworkAddress
+      - IPv4PrefixLength
+      - Name
+    CloudHSMSoftwareLicense:
+      type: object
+      properties:
+        ID:
+          type: string
+          readOnly: true
+          example: '110000000000'
+        CreatedAt:
+          $ref: '#/components/schemas/DateTime'
+        ModifiedAt:
+          $ref: '#/components/schemas/DateTime'
+        ServiceClass:
+          enum:
+          - cloud/cloudhsm/license/l7
+          type: string
+          description: '* `cloud/cloudhsm/license/l7` - Type-L7'
+          x-spec-enum-id: a5b49b449aca4a6f
+          readOnly: true
+          title: サービスクラス
+        Name:
+          type: string
+          title: 名前
+          maxLength: 255
+        Description:
+          type: string
+          title: 説明
+        Tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          nullable: true
+      required:
+      - CreatedAt
+      - Description
+      - ID
+      - ModifiedAt
+      - Name
+      - ServiceClass
+      - Tags
+    CloudHSMSoftwareLicenseRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          minLength: 1
+          title: 名前
+          maxLength: 255
+        Description:
+          type: string
+          title: 説明
+        Tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          nullable: true
+      required:
+      - Name
+    CreateCloudHSM:
+      type: object
+      properties:
+        ID:
+          type: string
+          readOnly: true
+          example: '110000000000'
+        CreatedAt:
+          $ref: '#/components/schemas/DateTime'
+        ModifiedAt:
+          $ref: '#/components/schemas/DateTime'
+        ServiceClass:
+          enum:
+          - cloud/cloudhsm/partition
+          type: string
+          description: '* `cloud/cloudhsm/partition` - Type-L7'
+          x-spec-enum-id: aec33bb088a5c108
+          readOnly: true
+          title: サービスクラス
+        Availability:
+          enum:
+          - precreate
+          - available
+          - discontinued
+          type: string
+          description: |-
+            * `precreate` - 準備中
+            * `available` - 利用可能
+            * `discontinued` - 廃止
+          x-spec-enum-id: 329069c36229258c
+          readOnly: true
+          title: 状態
+        Name:
+          type: string
+          title: 名前
+          maxLength: 255
+        Description:
+          type: string
+          title: 説明
+        Tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          nullable: true
+        IPv4NetworkAddress:
+          type: string
+          title: IPv4ネットワークアドレス
+          example: 192.168.100.0
+        IPv4PrefixLength:
+          type: integer
+          title: IPv4プレフィックス長
+          example: 24
+        IPv4Address:
+          type: string
+          readOnly: true
+          example: 192.168.100.11
+      required:
+      - IPv4NetworkAddress
+      - IPv4PrefixLength
+      - Name
+    CreateCloudHSMClient:
+      type: object
+      properties:
+        ID:
+          type: string
+          readOnly: true
+          example: '110000000000'
+        CreatedAt:
+          $ref: '#/components/schemas/DateTime'
+        ModifiedAt:
+          $ref: '#/components/schemas/DateTime'
+        Availability:
+          enum:
+          - precreate
+          - available
+          - discontinued
+          type: string
+          description: |-
+            * `precreate` - 準備中
+            * `available` - 利用可能
+            * `discontinued` - 廃止
+          x-spec-enum-id: 329069c36229258c
+          readOnly: true
+          title: 状態
+        Name:
+          type: string
+          title: 名前
+          maxLength: 255
+        Certificate:
+          type: string
+          example: '-----BEGIN CERTIFICATE-----\nMIIC0DCCAbigAwIBAgIJAJ.....\n-----END
+            CERTIFICATE-----'
+      required:
+      - Certificate
+      - Name
+    CreateCloudHSMClientRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          minLength: 1
+          title: 名前
+          maxLength: 255
+        Certificate:
+          type: string
+          minLength: 1
+          example: '-----BEGIN CERTIFICATE-----\nMIIC0DCCAbigAwIBAgIJAJ.....\n-----END
+            CERTIFICATE-----'
+      required:
+      - Certificate
+      - Name
+    CreateCloudHSMRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          minLength: 1
+          title: 名前
+          maxLength: 255
+        Description:
+          type: string
+          title: 説明
+        Tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          nullable: true
+        IPv4NetworkAddress:
+          type: string
+          minLength: 1
+          title: IPv4ネットワークアドレス
+          example: 192.168.100.0
+        IPv4PrefixLength:
+          type: integer
+          title: IPv4プレフィックス長
+          example: 24
+      required:
+      - IPv4NetworkAddress
+      - IPv4PrefixLength
+      - Name
+    CreateCloudHSMSoftwareLicense:
+      type: object
+      properties:
+        ID:
+          type: string
+          readOnly: true
+          example: '110000000000'
+        CreatedAt:
+          $ref: '#/components/schemas/DateTime'
+        ModifiedAt:
+          $ref: '#/components/schemas/DateTime'
+        ServiceClass:
+          enum:
+          - cloud/cloudhsm/license/l7
+          type: string
+          description: '* `cloud/cloudhsm/license/l7` - Type-L7'
+          x-spec-enum-id: a5b49b449aca4a6f
+          title: サービスクラス
+        Name:
+          type: string
+          title: 名前
+          maxLength: 255
+        Description:
+          type: string
+          title: 説明
+        Tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          nullable: true
+      required:
+      - Name
+      - ServiceClass
+    CreateCloudHSMSoftwareLicenseRequest:
+      type: object
+      properties:
+        ServiceClass:
+          enum:
+          - cloud/cloudhsm/license/l7
+          type: string
+          description: '* `cloud/cloudhsm/license/l7` - Type-L7'
+          x-spec-enum-id: a5b49b449aca4a6f
+          title: サービスクラス
+        Name:
+          type: string
+          minLength: 1
+          title: 名前
+          maxLength: 255
+        Description:
+          type: string
+          title: 説明
+        Tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          nullable: true
+      required:
+      - Name
+      - ServiceClass
+    CreateKeyRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          minLength: 1
+          title: 名前
+          maxLength: 255
+        Description:
+          type: string
+          title: 説明
+        Tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          nullable: true
+        PlainKey:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - Name
+    CreateKeyResponse:
+      type: object
+      description: 鍵の作成結果
+      properties:
+        ID:
+          type: string
+          readOnly: true
+          example: '110000000000'
+        CreatedAt:
+          $ref: '#/components/schemas/DateTime'
+        ModifiedAt:
+          $ref: '#/components/schemas/DateTime'
+        ServiceClass:
+          enum:
+          - cloud/kms/key
+          - cloud/kms/key/legacy
+          type: string
+          description: |-
+            * `cloud/kms/key` - 通常
+            * `cloud/kms/key/legacy` - レガシー
+          x-spec-enum-id: cdc4cc214c741297
+          readOnly: true
+          title: サービスクラス
+        Name:
+          type: string
+          title: 名前
+          maxLength: 255
+        Description:
+          type: string
+          title: 説明
+        KeyOrigin:
+          enum:
+          - generated
+          - imported
+          type: string
+          description: |-
+            * `generated` - 生成
+            * `imported` - インポート
+          x-spec-enum-id: ce5bfb1ae3eae901
+          readOnly: true
+          title: 鍵の生成元
+        LatestVersion:
+          type: integer
+          readOnly: true
+          example: 0
+        Status:
+          enum:
+          - active
+          - restricted
+          - suspended
+          - pending_destruction
+          - destroyed
+          type: string
+          description: |-
+            * `active` - 有効
+            * `restricted` - 制限付き
+            * `suspended` - 一時停止
+            * `pending_destruction` - 削除保留
+            * `destroyed` - 削除済み
+          x-spec-enum-id: 16d501464180eaec
+          readOnly: true
+          title: 鍵の状態
+        DeletionScheduledAfter:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          title: 削除予定日時
+          description: この日時以降に削除される予定です
+          example: '2025-02-05T12:19:22.551827+09:00'
+        Tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          nullable: true
+      required:
+      - CreatedAt
+      - Description
+      - ID
+      - KeyOrigin
+      - LatestVersion
+      - ModifiedAt
+      - Name
+      - ServiceClass
+      - Status
+      - Tags
+    CreateSecretRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          minLength: 1
+          title: 名前
+          maxLength: 255
+        Value:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - Name
+      - Value
+    CreateSecretResponse:
+      type: object
+      properties:
+        Name:
+          type: string
+          maxLength: 255
+        LatestVersion:
+          type: integer
+          description: 最新のバージョン番号（1以上）
+          minimum: 1
+          example: 1
+      required:
+      - LatestVersion
+      - Name
+    CreateVault:
+      type: object
+      properties:
+        ID:
+          type: string
+          readOnly: true
+          example: '110000000000'
+        CreatedAt:
+          $ref: '#/components/schemas/DateTime'
+        ModifiedAt:
+          $ref: '#/components/schemas/DateTime'
+        Name:
+          type: string
+          title: 名前
+          maxLength: 255
+        Description:
+          type: string
+          title: 説明
+        KmsKeyID:
+          type: string
+          title: KMS 鍵ID
+          maxLength: 255
+          example: '110000000000'
+        Tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          nullable: true
+      required:
+      - KmsKeyID
+      - Name
+    CreateVaultRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          minLength: 1
+          title: 名前
+          maxLength: 255
+        Description:
+          type: string
+          title: 説明
+        KmsKeyID:
+          type: string
+          minLength: 1
+          title: KMS 鍵ID
+          maxLength: 255
+          example: '110000000000'
+        Tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          nullable: true
+      required:
+      - KmsKeyID
+      - Name
+    DecryptionRequest:
+      type: object
+      properties:
+        Cipher:
+          type: string
+          minLength: 1
+          description: Base64 エンコードされた暗号文
+          maxLength: 3072
+      required:
+      - Cipher
+    EncryptionRequest:
+      type: object
+      properties:
+        Plain:
+          type: string
+          description: Base64 エンコードされた平文
+        Algo:
+          enum:
+          - aes-256-gcm
+          - aes-256-cbc
+          - aes-256-kw
+          type: string
+          x-spec-enum-id: 1aa04582035002e4
+          default: aes-256-gcm
+          description: |-
+            暗号化アルゴリズム
+
+            * `aes-256-gcm` - AES256-GCM（default）
+            * `aes-256-cbc` - AES256-CBC
+            * `aes-256-kw` - AES256-KW
+      required:
+      - Plain
+    Key:
+      type: object
+      properties:
+        ID:
+          type: string
+          readOnly: true
+          example: '110000000000'
+        CreatedAt:
+          $ref: '#/components/schemas/DateTime'
+        ModifiedAt:
+          $ref: '#/components/schemas/DateTime'
+        ServiceClass:
+          enum:
+          - cloud/kms/key
+          - cloud/kms/key/legacy
+          type: string
+          description: |-
+            * `cloud/kms/key` - 通常
+            * `cloud/kms/key/legacy` - レガシー
+          x-spec-enum-id: cdc4cc214c741297
+          readOnly: true
+          title: サービスクラス
+        Name:
+          type: string
+          title: 名前
+          maxLength: 255
+        Description:
+          type: string
+          title: 説明
+        KeyOrigin:
+          enum:
+          - generated
+          - imported
+          type: string
+          description: |-
+            * `generated` - 生成
+            * `imported` - インポート
+          x-spec-enum-id: ce5bfb1ae3eae901
+          readOnly: true
+          title: 鍵の生成元
+        LatestVersion:
+          type: integer
+          readOnly: true
+          example: 0
+        Status:
+          enum:
+          - active
+          - restricted
+          - suspended
+          - pending_destruction
+          - destroyed
+          type: string
+          description: |-
+            * `active` - 有効
+            * `restricted` - 制限付き
+            * `suspended` - 一時停止
+            * `pending_destruction` - 削除保留
+            * `destroyed` - 削除済み
+          x-spec-enum-id: 16d501464180eaec
+          readOnly: true
+          title: 鍵の状態
+        DeletionScheduledAfter:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          title: 削除予定日時
+          description: この日時以降に削除される予定です
+          example: '2025-02-05T12:19:22.551827+09:00'
+        Tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          nullable: true
+      required:
+      - CreatedAt
+      - Description
+      - ID
+      - KeyOrigin
+      - LatestVersion
+      - ModifiedAt
+      - Name
+      - ServiceClass
+      - Status
+      - Tags
+    KeyCipher:
+      type: object
+      properties:
+        Cipher:
+          type: string
+          description: Base64 エンコードされた暗号文
+      required:
+      - Cipher
+    KeyPlain:
+      type: object
+      properties:
+        Plain:
+          type: string
+          description: Base64 エンコードされた平文
+      required:
+      - Plain
+    KeyRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          minLength: 1
+          title: 名前
+          maxLength: 255
+        Description:
+          type: string
+          title: 説明
+        Tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          nullable: true
+      required:
+      - Name
+    KeyScheduledDestruction:
+      type: object
+      properties:
+        Status:
+          enum:
+          - active
+          - restricted
+          - suspended
+          - pending_destruction
+          - destroyed
+          type: string
+          description: |-
+            * `active` - 有効
+            * `restricted` - 制限付き
+            * `suspended` - 一時停止
+            * `pending_destruction` - 削除保留
+            * `destroyed` - 削除済み
+          x-spec-enum-id: 16d501464180eaec
+        DeletionScheduledAfter:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2025-02-05T12:19:22.551827+09:00'
+      required:
+      - DeletionScheduledAfter
+      - Status
+    LocalRouter:
+      type: object
+      properties:
+        ResourceID:
+          type: string
+          example: '110000000000'
+        SecretKey:
+          type: string
+          example: PAIRINGSECRETKEY
+    PaginatedCloudHSMClientList:
+      type: object
+      required:
+      - Count
+      - From
+      - Total
+      - Clients
+      - is_ok
+      properties:
+        Count:
+          type: integer
+          example: 10
+        From:
+          type: integer
+          example: 0
+        Total:
+          type: integer
+          example: 10
+        Clients:
+          type: array
+          items:
+            $ref: '#/components/schemas/CloudHSMClient'
+        is_ok:
+          type: boolean
+          example: true
+    PaginatedCloudHSMDocumentList:
+      type: object
+      required:
+      - Count
+      - From
+      - Total
+      - CloudHSMDocuments
+      - is_ok
+      properties:
+        Count:
+          type: integer
+          example: 10
+        From:
+          type: integer
+          example: 0
+        Total:
+          type: integer
+          example: 10
+        CloudHSMDocuments:
+          type: array
+          items:
+            $ref: '#/components/schemas/CloudHSMDocument'
+        is_ok:
+          type: boolean
+          example: true
+    PaginatedCloudHSMList:
+      type: object
+      required:
+      - Count
+      - From
+      - Total
+      - CloudHSMs
+      - is_ok
+      properties:
+        Count:
+          type: integer
+          example: 10
+        From:
+          type: integer
+          example: 0
+        Total:
+          type: integer
+          example: 10
+        CloudHSMs:
+          type: array
+          items:
+            $ref: '#/components/schemas/CloudHSM'
+        is_ok:
+          type: boolean
+          example: true
+    PaginatedCloudHSMSoftwareLicenseList:
+      type: object
+      required:
+      - Count
+      - From
+      - Total
+      - Licenses
+      - is_ok
+      properties:
+        Count:
+          type: integer
+          example: 10
+        From:
+          type: integer
+          example: 0
+        Total:
+          type: integer
+          example: 10
+        Licenses:
+          type: array
+          items:
+            $ref: '#/components/schemas/CloudHSMSoftwareLicense'
+        is_ok:
+          type: boolean
+          example: true
+    PaginatedKeyList:
+      type: object
+      required:
+      - Count
+      - From
+      - Total
+      - Keys
+      - is_ok
+      properties:
+        Count:
+          type: integer
+          example: 10
+        From:
+          type: integer
+          example: 0
+        Total:
+          type: integer
+          example: 10
+        Keys:
+          type: array
+          items:
+            $ref: '#/components/schemas/Key'
+        is_ok:
+          type: boolean
+          example: true
+    PaginatedSecretResponseList:
+      type: object
+      required:
+      - Count
+      - From
+      - Total
+      - Secrets
+      - is_ok
+      properties:
+        Count:
+          type: integer
+          example: 10
+        From:
+          type: integer
+          example: 0
+        Total:
+          type: integer
+          example: 10
+        Secrets:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecretResponse'
+        is_ok:
+          type: boolean
+          example: true
+    PaginatedVaultList:
+      type: object
+      required:
+      - Count
+      - From
+      - Total
+      - Vaults
+      - is_ok
+      properties:
+        Count:
+          type: integer
+          example: 10
+        From:
+          type: integer
+          example: 0
+        Total:
+          type: integer
+          example: 10
+        Vaults:
+          type: array
+          items:
+            $ref: '#/components/schemas/Vault'
+        is_ok:
+          type: boolean
+          example: true
+    PeerRequest:
+      type: object
+      properties:
+        ID:
+          type: string
+          minLength: 1
+          example: '110000000000'
+        SecretKey:
+          type: string
+          minLength: 1
+          example: PAIRINGSECRETKEY
+      required:
+      - ID
+      - SecretKey
+    ScheduleDestructionKeyRequest:
+      type: object
+      description: 鍵の削除スケジュール設定
+      properties:
+        PendingDays:
+          type: integer
+          maximum: 90
+          minimum: 7
+          default: 7
+          description: 削除をスケジュールする日数
+          example: 7
+    SecretResponse:
+      type: object
+      properties:
+        Name:
+          type: string
+          maxLength: 255
+        LatestVersion:
+          type: integer
+          example: 0
+      required:
+      - LatestVersion
+      - Name
+    UnveilRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          minLength: 1
+        Version:
+          type: integer
+          nullable: true
+      required:
+      - Name
+    UnveilResponse:
+      type: object
+      properties:
+        Name:
+          type: string
+        Version:
+          type: integer
+        Value:
+          type: string
+      required:
+      - Name
+      - Value
+      - Version
+    Vault:
+      type: object
+      properties:
+        ID:
+          type: string
+          readOnly: true
+          example: '110000000000'
+        CreatedAt:
+          $ref: '#/components/schemas/DateTime'
+        ModifiedAt:
+          $ref: '#/components/schemas/DateTime'
+        Name:
+          type: string
+          title: 名前
+          maxLength: 255
+        Description:
+          type: string
+          title: 説明
+        KmsKeyID:
+          type: string
+          readOnly: true
+          title: KMS 鍵ID
+          example: '110000000000'
+        Tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          nullable: true
+      required:
+      - CreatedAt
+      - Description
+      - ID
+      - KmsKeyID
+      - ModifiedAt
+      - Name
+      - Tags
+    VaultRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          minLength: 1
+          title: 名前
+          maxLength: 255
+        Description:
+          type: string
+          title: 説明
+        Tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          nullable: true
+      required:
+      - Name
+    WrappedChangeKeyState:
+      type: object
+      properties:
+        Key:
+          $ref: '#/components/schemas/ChangeKeyState'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - Key
+      - is_ok
+    WrappedChangeKeyStateRequest:
+      type: object
+      properties:
+        Key:
+          $ref: '#/components/schemas/ChangeKeyStateRequest'
+      required:
+      - Key
+    WrappedCloudHSM:
+      type: object
+      properties:
+        CloudHSM:
+          $ref: '#/components/schemas/CloudHSM'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - CloudHSM
+      - is_ok
+    WrappedCloudHSMClient:
+      type: object
+      properties:
+        Client:
+          $ref: '#/components/schemas/CloudHSMClient'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - Client
+      - is_ok
+    WrappedCloudHSMClientRequest:
+      type: object
+      properties:
+        Client:
+          $ref: '#/components/schemas/CloudHSMClientRequest'
+      required:
+      - Client
+    WrappedCloudHSMDocumentDownload:
+      type: object
+      properties:
+        Document:
+          $ref: '#/components/schemas/CloudHSMDocumentDownload'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - Document
+      - is_ok
+    WrappedCloudHSMRequest:
+      type: object
+      properties:
+        CloudHSM:
+          $ref: '#/components/schemas/CloudHSMRequest'
+      required:
+      - CloudHSM
+    WrappedCloudHSMSoftwareLicense:
+      type: object
+      properties:
+        License:
+          $ref: '#/components/schemas/CloudHSMSoftwareLicense'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - License
+      - is_ok
+    WrappedCloudHSMSoftwareLicenseRequest:
+      type: object
+      properties:
+        License:
+          $ref: '#/components/schemas/CloudHSMSoftwareLicenseRequest'
+      required:
+      - License
+    WrappedCreateCloudHSM:
+      type: object
+      properties:
+        CloudHSM:
+          $ref: '#/components/schemas/CreateCloudHSM'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - CloudHSM
+      - is_ok
+    WrappedCreateCloudHSMClient:
+      type: object
+      properties:
+        Client:
+          $ref: '#/components/schemas/CreateCloudHSMClient'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - Client
+      - is_ok
+    WrappedCreateCloudHSMClientRequest:
+      type: object
+      properties:
+        Client:
+          $ref: '#/components/schemas/CreateCloudHSMClientRequest'
+      required:
+      - Client
+    WrappedCreateCloudHSMRequest:
+      type: object
+      properties:
+        CloudHSM:
+          $ref: '#/components/schemas/CreateCloudHSMRequest'
+      required:
+      - CloudHSM
+    WrappedCreateCloudHSMSoftwareLicense:
+      type: object
+      properties:
+        License:
+          $ref: '#/components/schemas/CreateCloudHSMSoftwareLicense'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - License
+      - is_ok
+    WrappedCreateCloudHSMSoftwareLicenseRequest:
+      type: object
+      properties:
+        License:
+          $ref: '#/components/schemas/CreateCloudHSMSoftwareLicenseRequest'
+      required:
+      - License
+    WrappedCreateKeyRequest:
+      type: object
+      properties:
+        Key:
+          $ref: '#/components/schemas/CreateKeyRequest'
+      required:
+      - Key
+    WrappedCreateKeyResponse:
+      type: object
+      properties:
+        Key:
+          $ref: '#/components/schemas/CreateKeyResponse'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - Key
+      - is_ok
+    WrappedCreateSecretRequest:
+      type: object
+      properties:
+        Secret:
+          $ref: '#/components/schemas/CreateSecretRequest'
+      required:
+      - Secret
+    WrappedCreateSecretResponse:
+      type: object
+      properties:
+        Secret:
+          $ref: '#/components/schemas/CreateSecretResponse'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - Secret
+      - is_ok
+    WrappedCreateVault:
+      type: object
+      properties:
+        Vault:
+          $ref: '#/components/schemas/CreateVault'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - Vault
+      - is_ok
+    WrappedCreateVaultRequest:
+      type: object
+      properties:
+        Vault:
+          $ref: '#/components/schemas/CreateVaultRequest'
+      required:
+      - Vault
+    WrappedDecryptionRequest:
+      type: object
+      properties:
+        Key:
+          $ref: '#/components/schemas/DecryptionRequest'
+      required:
+      - Key
+    WrappedEncryptionRequest:
+      type: object
+      properties:
+        Key:
+          $ref: '#/components/schemas/EncryptionRequest'
+      required:
+      - Key
+    WrappedKey:
+      type: object
+      properties:
+        Key:
+          $ref: '#/components/schemas/Key'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - Key
+      - is_ok
+    WrappedKeyCipher:
+      type: object
+      properties:
+        Key:
+          $ref: '#/components/schemas/KeyCipher'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - Key
+      - is_ok
+    WrappedKeyPlain:
+      type: object
+      properties:
+        Key:
+          $ref: '#/components/schemas/KeyPlain'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - Key
+      - is_ok
+    WrappedKeyRequest:
+      type: object
+      properties:
+        Key:
+          $ref: '#/components/schemas/KeyRequest'
+      required:
+      - Key
+    WrappedKeyScheduledDestruction:
+      type: object
+      properties:
+        Key:
+          $ref: '#/components/schemas/KeyScheduledDestruction'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - Key
+      - is_ok
+    WrappedPeerList:
+      type: object
+      properties:
+        Peers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CloudHSMPeer'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - Peers
+      - is_ok
+    WrappedPeerRequest:
+      type: object
+      properties:
+        Peer:
+          $ref: '#/components/schemas/PeerRequest'
+      required:
+      - Peer
+    WrappedScheduleDestructionKeyRequest:
+      type: object
+      properties:
+        Key:
+          $ref: '#/components/schemas/ScheduleDestructionKeyRequest'
+      required:
+      - Key
+    WrappedUnveilRequest:
+      type: object
+      properties:
+        Secret:
+          $ref: '#/components/schemas/UnveilRequest'
+      required:
+      - Secret
+    WrappedUnveilResponse:
+      type: object
+      properties:
+        Secret:
+          $ref: '#/components/schemas/UnveilResponse'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - Secret
+      - is_ok
+    WrappedVault:
+      type: object
+      properties:
+        Vault:
+          $ref: '#/components/schemas/Vault'
+        is_ok:
+          type: boolean
+          example: true
+      required:
+      - Vault
+      - is_ok
+    WrappedVaultRequest:
+      type: object
+      properties:
+        Vault:
+          $ref: '#/components/schemas/VaultRequest'
+      required:
+      - Vault
+    WrappedDeleteSecretRequest:
+      type: object
+      properties:
+        Secret:
+          type: object
+          properties:
+            Name:
+              type: string
+          required:
+          - Name
+      required:
+      - Secret
+    DateTime:
+      type: string
+      format: iso8601
+      example: '2025-02-05T12:19:22.551827+09:00'
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: APIキーとシークレットをご利用ください

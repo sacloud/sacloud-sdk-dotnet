@@ -10,11 +10,12 @@
 		<RepositoryUrl>https://github.com/sacloud/sacloud-sdk-dotnet</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<SdkPackageProjectDirectory>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(MSBuildProjectName)/src'))</SdkPackageProjectDirectory>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(MSBuildProjectDirectory)' == '$(MSBuildThisFileDirectory)$(MSBuildProjectName)/src'">
+	<PropertyGroup Condition="'$(SdkPackageProjectDirectory)' == '$(MSBuildProjectDirectory)'">
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
-	<ItemGroup Condition="'$(MSBuildProjectDirectory)' == '$(MSBuildThisFileDirectory)$(MSBuildProjectName)/src'">
+	<ItemGroup Condition="'$(SdkPackageProjectDirectory)' == '$(MSBuildProjectDirectory)'">
 		<None Include="$(MSBuildProjectDirectory)/../README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 </Project>

@@ -47,9 +47,11 @@
 | `LocalizedArrayElementSpecificCountAttribute` | 配列の特定要素数バリデーション |
 | `LocalizedArrayElementRangeAttribute` | 配列要素の数値範囲バリデーション |
 | `LocalizedArrayElementLengthRangeAttribute` | 配列要素（文字列）の最小・最大長バリデーション |
+| `LocalizedArrayElementMinLengthAttribute` | 配列要素（文字列）の最小長バリデーション |
 | `LocalizedArrayElementMaxLengthAttribute` | 配列要素（文字列）の最大長バリデーション |
 | `LocalizedArrayElementRegularExpressionAttribute` | 配列要素の正規表現バリデーション |
 | `LocalizedArrayElementEnumDataTypeAttribute` | 配列要素の列挙型バリデーション |
+| `LocalizedNotNullArrayElementsAttribute` | 配列要素の null 禁止バリデーション（配列自体の null と空配列は許可） |
 | `LocalizedNotEmptyArrayAttribute` | 空配列禁止バリデーション |
 | `LocalizedUniqueArrayAttribute` | 配列要素の重複禁止バリデーション |
 | `LocalizedAtLeastOneAttribute` | 1 プロパティ以上指定バリデーション |

@@ -49,17 +49,17 @@ namespace Sacloud.Sdk.KMS.Kms.Keys.Item.ScheduleDestruction
         /// <summary>
         /// キーの削除を予約します。
         /// </summary>
-        /// <returns>A <see cref="Stream"/></returns>
+        /// <returns>A <see cref="global::Sacloud.Sdk.KMS.Models.WrappedKeyScheduledDestruction"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<Stream?> PostAsync(global::Sacloud.Sdk.KMS.Models.WrappedScheduleDestructionKey body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Sacloud.Sdk.KMS.Models.WrappedKeyScheduledDestruction?> PostAsync(global::Sacloud.Sdk.KMS.Models.WrappedScheduleDestructionKeyRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<Stream> PostAsync(global::Sacloud.Sdk.KMS.Models.WrappedScheduleDestructionKey body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Sacloud.Sdk.KMS.Models.WrappedKeyScheduledDestruction> PostAsync(global::Sacloud.Sdk.KMS.Models.WrappedScheduleDestructionKeyRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             // パスパラメータのバリデーション
@@ -77,12 +77,13 @@ namespace Sacloud.Sdk.KMS.Kms.Keys.Item.ScheduleDestruction
 
             try
             {
+                if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
                 var requestInfo = ToPostRequestInformation(body, requestConfiguration);
                 var errorMapping = new Dictionary<string, ParsableFactory<IParsable>>
                 {
                     { "XXX", ApiError.CreateFromDiscriminatorValue }
                 };
-                var result = await RequestAdapter.SendPrimitiveAsync<Stream>(requestInfo, errorMapping, cancellationToken).ConfigureAwait(false);
+                var result = await RequestAdapter.SendAsync<global::Sacloud.Sdk.KMS.Models.WrappedKeyScheduledDestruction>(requestInfo, global::Sacloud.Sdk.KMS.Models.WrappedKeyScheduledDestruction.CreateFromDiscriminatorValue, errorMapping, cancellationToken).ConfigureAwait(false);
 
                 // 成功ログ
                 _logger?.LogInformation("キーの削除予約が完了しました。 {EndTime} [StatusCode, 200]", DateTime.UtcNow.ToString("o"));
@@ -110,16 +111,17 @@ namespace Sacloud.Sdk.KMS.Kms.Keys.Item.ScheduleDestruction
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Sacloud.Sdk.KMS.Models.WrappedScheduleDestructionKey body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Sacloud.Sdk.KMS.Models.WrappedScheduleDestructionKeyRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Sacloud.Sdk.KMS.Models.WrappedScheduleDestructionKey body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Sacloud.Sdk.KMS.Models.WrappedScheduleDestructionKeyRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = new RequestInformation(Method.POST, UrlTemplate, PathParameters);
             requestInfo.Configure(requestConfiguration);
+            requestInfo.Headers.TryAdd("Accept", "application/json");
             requestInfo.SetContentFromParsable(RequestAdapter, "application/json", body);
             return requestInfo;
         }

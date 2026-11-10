@@ -45,8 +45,7 @@ public class KeyPlainTests
         var deserializers = model.GetFieldDeserializers();
 
         Assert.NotNull(deserializers);
-        Assert.Equal(2, deserializers.Count);
-        Assert.True(deserializers.ContainsKey("Algo"));
+        Assert.Single(deserializers);
         Assert.True(deserializers.ContainsKey("Plain"));
     }
 
@@ -70,10 +69,6 @@ public class KeyPlainTests
         var deserializers = model.GetFieldDeserializers();
         var parseNode = Substitute.For<IParseNode>();
 
-        parseNode.GetEnumValue<KeyEncryptAlgoEnum>().Returns(KeyEncryptAlgoEnum.Aes256Gcm);
-        deserializers["Algo"](parseNode);
-        Assert.Equal(KeyEncryptAlgoEnum.Aes256Gcm, model.Algo);
-
         parseNode.GetStringValue().Returns("base64-encoded-plain-data");
         deserializers["Plain"](parseNode);
         Assert.Equal("base64-encoded-plain-data", model.Plain);
@@ -87,7 +82,6 @@ public class KeyPlainTests
     {
         var originalModel = new KeyPlain
         {
-            Algo = KeyEncryptAlgoEnum.Aes256Cbc,
             Plain = "base64-plain-content"
         };
 
@@ -103,7 +97,6 @@ public class KeyPlainTests
         var deserializedModel = parseNode.GetObjectValue(KeyPlain.CreateFromDiscriminatorValue);
 
         Assert.NotNull(deserializedModel);
-        Assert.Equal(originalModel.Algo, deserializedModel.Algo);
         Assert.Equal(originalModel.Plain, deserializedModel.Plain);
     }
 

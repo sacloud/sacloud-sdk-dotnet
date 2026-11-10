@@ -16,31 +16,7 @@ public class Route_protocolsTests
     public void EnumValues_HasCorrectCount()
     {
         var values = Enum.GetValues<Route_protocols>();
-        Assert.Equal(3, values.Length);
-    }
-
-    /// <summary>
-    /// HttpHttpsメンバーのEnumMember属性が "http,https" であることを検証
-    /// </summary>
-    [Fact]
-    public void Route_protocols_HttpHttps_HasCorrectEnumMemberAttribute()
-    {
-        var field = typeof(Route_protocols).GetField(nameof(Route_protocols.HttpHttps));
-        var attribute = field?.GetCustomAttribute<EnumMemberAttribute>();
-        Assert.NotNull(attribute);
-        Assert.Equal("http,https", attribute.Value);
-    }
-
-    /// <summary>
-    /// HttpメンバーのEnumMember属性が "http" であることを検証
-    /// </summary>
-    [Fact]
-    public void Route_protocols_Http_HasCorrectEnumMemberAttribute()
-    {
-        var field = typeof(Route_protocols).GetField(nameof(Route_protocols.Http));
-        var attribute = field?.GetCustomAttribute<EnumMemberAttribute>();
-        Assert.NotNull(attribute);
-        Assert.Equal("http", attribute.Value);
+        Assert.Single(values);
     }
 
     /// <summary>

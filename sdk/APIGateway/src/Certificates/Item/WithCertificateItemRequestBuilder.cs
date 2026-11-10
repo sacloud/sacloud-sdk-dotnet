@@ -24,6 +24,12 @@ namespace Sacloud.Sdk.APIGateway.Certificates.Item
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<WithCertificateItemRequestBuilder> _logger;
 
+        /// <summary>The acme property</summary>
+        public global::Sacloud.Sdk.APIGateway.Certificates.Item.Acme.AcmeRequestBuilder Acme
+        {
+            get => new global::Sacloud.Sdk.APIGateway.Certificates.Item.Acme.AcmeRequestBuilder(PathParameters, RequestAdapter, _loggerFactory);
+        }
+
         /// <summary>
         /// Instantiates a new <see cref="global::Sacloud.Sdk.APIGateway.Certificates.Item.WithCertificateItemRequestBuilder"/> and sets the default values.
         /// </summary>

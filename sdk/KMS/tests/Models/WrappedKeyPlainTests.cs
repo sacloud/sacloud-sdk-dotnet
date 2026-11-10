@@ -45,7 +45,8 @@ public class WrappedKeyPlainTests
         var deserializers = model.GetFieldDeserializers();
 
         Assert.NotNull(deserializers);
-        Assert.Single(deserializers);
+        Assert.Equal(2, deserializers.Count);
+        Assert.True(deserializers.ContainsKey("is_ok"));
         Assert.True(deserializers.ContainsKey("Key"));
     }
 
@@ -69,12 +70,15 @@ public class WrappedKeyPlainTests
         var deserializers = model.GetFieldDeserializers();
         var parseNode = Substitute.For<IParseNode>();
 
-        var keyPlainObject = new KeyPlain { Plain = "plain-data", Algo = KeyEncryptAlgoEnum.Aes256Gcm };
+        parseNode.GetBoolValue().Returns(true);
+        deserializers["is_ok"](parseNode);
+        Assert.True(model.IsOk);
+
+        var keyPlainObject = new KeyPlain { Plain = "plain-data" };
         parseNode.GetObjectValue(Arg.Any<ParsableFactory<KeyPlain>>()).Returns(keyPlainObject);
         deserializers["Key"](parseNode);
         Assert.NotNull(model.Key);
         Assert.Equal("plain-data", model.Key.Plain);
-        Assert.Equal(KeyEncryptAlgoEnum.Aes256Gcm, model.Key.Algo);
     }
 
     /// <summary>
@@ -85,10 +89,10 @@ public class WrappedKeyPlainTests
     {
         var originalModel = new WrappedKeyPlain
         {
+            IsOk = true,
             Key = new KeyPlain
             {
-                Plain = "base64-plain-content",
-                Algo = KeyEncryptAlgoEnum.Aes256Cbc
+                Plain = "base64-plain-content"
             }
         };
 
@@ -104,9 +108,9 @@ public class WrappedKeyPlainTests
         var deserializedModel = parseNode.GetObjectValue(WrappedKeyPlain.CreateFromDiscriminatorValue);
 
         Assert.NotNull(deserializedModel);
+        Assert.Equal(originalModel.IsOk, deserializedModel.IsOk);
         Assert.NotNull(deserializedModel.Key);
         Assert.Equal(originalModel.Key.Plain, deserializedModel.Key.Plain);
-        Assert.Equal(originalModel.Key.Algo, deserializedModel.Key.Algo);
     }
 
     /// <summary>

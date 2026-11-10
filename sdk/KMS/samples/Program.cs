@@ -66,9 +66,10 @@ static KMSClient.SakuraCloudZone SelectZone()
     Console.WriteLine("\n使用するゾーンを選択してください:");
     Console.WriteLine("1. Is1a (石狩第1ゾーン)");
     Console.WriteLine("2. Is1b (石狩第2ゾーン)");
-    Console.WriteLine("3. Tk1a (東京第1ゾーン)");
-    Console.WriteLine("4. Tk1b (東京第2ゾーン)");
-    Console.WriteLine("選択 (1 ~ 4 から入力): ");
+    Console.WriteLine("3. Is1c (石狩第3ゾーン)");
+    Console.WriteLine("4. Tk1a (東京第1ゾーン)");
+    Console.WriteLine("5. Tk1b (東京第2ゾーン)");
+    Console.WriteLine("選択 (1 ~ 5 から入力): ");
 
     var input = Console.ReadLine();
     switch (input)
@@ -78,8 +79,10 @@ static KMSClient.SakuraCloudZone SelectZone()
         case "2":
             return KMSClient.SakuraCloudZone.Is1b;
         case "3":
-            return KMSClient.SakuraCloudZone.Tk1a;
+            return KMSClient.SakuraCloudZone.Is1c;
         case "4":
+            return KMSClient.SakuraCloudZone.Tk1a;
+        case "5":
             return KMSClient.SakuraCloudZone.Tk1b;
         default:
             Console.WriteLine("無効な番号のため Is1a を使用します。");

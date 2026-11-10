@@ -21,6 +21,10 @@ namespace Sacloud.Sdk.KMS
             /// </summary>
             Is1b,
             /// <summary>
+            /// 石狩第3ゾーン
+            /// </summary>
+            Is1c,
+            /// <summary>
             /// 東京第1ゾーン
             /// </summary>
             Tk1a,
@@ -37,6 +41,7 @@ namespace Sacloud.Sdk.KMS
             {
                 { SakuraCloudZone.Is1a, "https://secure.sakura.ad.jp/cloud/zone/is1a/api/cloud/1.1" },
                 { SakuraCloudZone.Is1b, "https://secure.sakura.ad.jp/cloud/zone/is1b/api/cloud/1.1" },
+                { SakuraCloudZone.Is1c, "https://secure.sakura.ad.jp/cloud/zone/is1c/api/cloud/1.1" },
                 { SakuraCloudZone.Tk1a, "https://secure.sakura.ad.jp/cloud/zone/tk1a/api/cloud/1.1" },
                 { SakuraCloudZone.Tk1b, "https://secure.sakura.ad.jp/cloud/zone/tk1b/api/cloud/1.1" }
             };
@@ -45,7 +50,7 @@ namespace Sacloud.Sdk.KMS
         /// Kiotaによる自動生成クラスの上書きを避けつつ、ゾーンごとにAPIエンドポイントURLを自動設定する拡張コンストラクタです。
         /// </summary>
         /// <param name="requestAdapter">リクエストアダプター</param>
-        /// <param name="zone">サクラクラウドのゾーン（Is1a, Is1b, Tk1a, Tk1b）</param>
+        /// <param name="zone">サクラクラウドのゾーン（Is1a, Is1b, Is1c, Tk1a, Tk1b）</param>
         /// <param name="loggerFactory">ロガーの作成に使用するロガー ファクトリ（省略可能）</param>
         /// <exception cref="ArgumentOutOfRangeException">未対応のゾーンが指定された場合</exception>
         /// <exception cref="ArgumentNullException">requestAdapterがnullの場合に発生します</exception>

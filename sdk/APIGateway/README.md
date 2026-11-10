@@ -26,10 +26,10 @@ SDK の導入手順と、最初に押さえておくべき基本的な使い方�
 ### 本 SDK で対応している API バージョン情報
 
 - OpenAPI 定義:
-    - ファイルパス: `sdk/APIGateway/openapi-spec/2.0.1/apigw-api.yaml`
+    - ファイルパス: `sdk/APIGateway/openapi-spec/2.1.0/apigw-api.yaml`
     - OpenAPI バージョン: 3.0.3
 - API Gateway API バージョン:
-    - `info.version`: `2.0.1`
+    - `info.version`: `2.1.0`
 - ベース URL:
     - `https://secure.sakura.ad.jp/cloud/api/apigw/1.0`
     - 本 SDK からのすべての API 呼び出しは、上記ベース URL を基点として実行されます。
@@ -222,8 +222,11 @@ dotnet run --project sdk/APIGateway/samples/APIGateway.Samples.csproj
 |---|---|---|
 | `Certificates.GetAsync` | GET | `/certificates` |
 | `Certificates.PostAsync` | POST | `/certificates` |
+| `Certificates.Acme.PostAsync` | POST | `/certificates/acme` |
 | `Certificates[{certificate_id}].PutAsync` | PUT | `/certificates/{certificate_id}` |
 | `Certificates[{certificate_id}].DeleteAsync` | DELETE | `/certificates/{certificate_id}` |
+| `Certificates[{certificate_id}].Acme.Renew.PostAsync` | POST | `/certificates/{certificate_id}/acme/renew` |
+| `Certificates[{certificate_id}].Acme.Reissue.PostAsync` | POST | `/certificates/{certificate_id}/acme/reissue` |
 
 ### プラン
 

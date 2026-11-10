@@ -76,6 +76,7 @@ public class KMSClientTests
     [Theory]
     [InlineData(KMSClient.SakuraCloudZone.Is1a, "https://secure.sakura.ad.jp/cloud/zone/is1a/api/cloud/1.1")]
     [InlineData(KMSClient.SakuraCloudZone.Is1b, "https://secure.sakura.ad.jp/cloud/zone/is1b/api/cloud/1.1")]
+    [InlineData(KMSClient.SakuraCloudZone.Is1c, "https://secure.sakura.ad.jp/cloud/zone/is1c/api/cloud/1.1")]
     [InlineData(KMSClient.SakuraCloudZone.Tk1a, "https://secure.sakura.ad.jp/cloud/zone/tk1a/api/cloud/1.1")]
     [InlineData(KMSClient.SakuraCloudZone.Tk1b, "https://secure.sakura.ad.jp/cloud/zone/tk1b/api/cloud/1.1")]
     public void Constructor_WithZone_SetsBaseUrlAndPathParameters(KMSClient.SakuraCloudZone zone, string expectedUrl)
@@ -96,6 +97,7 @@ public class KMSClientTests
     [Theory]
     [InlineData(KMSClient.SakuraCloudZone.Is1a, "https://secure.sakura.ad.jp/cloud/zone/is1a/api/cloud/1.1")]
     [InlineData(KMSClient.SakuraCloudZone.Is1b, "https://secure.sakura.ad.jp/cloud/zone/is1b/api/cloud/1.1")]
+    [InlineData(KMSClient.SakuraCloudZone.Is1c, "https://secure.sakura.ad.jp/cloud/zone/is1c/api/cloud/1.1")]
     [InlineData(KMSClient.SakuraCloudZone.Tk1a, "https://secure.sakura.ad.jp/cloud/zone/tk1a/api/cloud/1.1")]
     [InlineData(KMSClient.SakuraCloudZone.Tk1b, "https://secure.sakura.ad.jp/cloud/zone/tk1b/api/cloud/1.1")]
     public void Constructor_WithZone_OverridesExistingBaseUrl(KMSClient.SakuraCloudZone zone, string expectedUrl)

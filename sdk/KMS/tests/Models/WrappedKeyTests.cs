@@ -45,7 +45,8 @@ public class WrappedKeyTests
         var deserializers = model.GetFieldDeserializers();
 
         Assert.NotNull(deserializers);
-        Assert.Single(deserializers);
+        Assert.Equal(2, deserializers.Count);
+        Assert.True(deserializers.ContainsKey("is_ok"));
         Assert.True(deserializers.ContainsKey("Key"));
     }
 
@@ -69,6 +70,10 @@ public class WrappedKeyTests
         var deserializers = model.GetFieldDeserializers();
         var parseNode = Substitute.For<IParseNode>();
 
+        parseNode.GetBoolValue().Returns(true);
+        deserializers["is_ok"](parseNode);
+        Assert.True(model.IsOk);
+
         var keyObject = new Key { Name = "test-key" };
         parseNode.GetObjectValue(Arg.Any<ParsableFactory<Key>>()).Returns(keyObject);
         deserializers["Key"](parseNode);
@@ -84,6 +89,7 @@ public class WrappedKeyTests
     {
         var originalModel = new WrappedKey
         {
+            IsOk = true,
             Key = new Key
             {
                 Name = "test-key-name",
@@ -103,6 +109,7 @@ public class WrappedKeyTests
         var deserializedModel = parseNode.GetObjectValue(WrappedKey.CreateFromDiscriminatorValue);
 
         Assert.NotNull(deserializedModel);
+        Assert.Equal(originalModel.IsOk, deserializedModel.IsOk);
         Assert.NotNull(deserializedModel.Key);
         Assert.Equal(originalModel.Key.Name, deserializedModel.Key.Name);
         Assert.Equal(originalModel.Key.Description, deserializedModel.Key.Description);

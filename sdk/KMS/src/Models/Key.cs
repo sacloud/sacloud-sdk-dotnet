@@ -5,7 +5,6 @@ using Microsoft.Kiota.Abstractions.Serialization;
 using System.Collections.Generic;
 using System.IO;
 using System;
-using System.ComponentModel.DataAnnotations;
 namespace Sacloud.Sdk.KMS.Models
 {
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
@@ -16,17 +15,15 @@ namespace Sacloud.Sdk.KMS.Models
         /// <summary>Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.</summary>
         public IDictionary<string, object> AdditionalData { get; set; }
         /// <summary>The CreatedAt property</summary>
-        public DateTimeOffset? CreatedAt { get; private set; }
+        public DateTimeOffset? CreatedAt { get; set; }
+        /// <summary>この日時以降に削除される予定です</summary>
+        public DateTimeOffset? DeletionScheduledAfter { get; private set; }
         /// <summary>The Description property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        [Display(Name = "Key.Description")]
-        [LocalizedRequired]
         public string? Description { get; set; }
 #nullable restore
 #else
-        [Display(Name = "Key.Description")]
-        [LocalizedRequired]
         public string Description { get; set; }
 #endif
         /// <summary>The ID property</summary>
@@ -37,42 +34,30 @@ namespace Sacloud.Sdk.KMS.Models
 #else
         public string ID { get; private set; }
 #endif
-        /// <summary>The KeyOrigin property</summary>
-        public global::Sacloud.Sdk.KMS.Models.KeyOriginEnum? KeyOrigin { get; private set; }
+        /// <summary>* `generated` - 生成* `imported` - インポート</summary>
+        public global::Sacloud.Sdk.KMS.Models.Key_KeyOrigin? KeyOrigin { get; private set; }
         /// <summary>The LatestVersion property</summary>
         public int? LatestVersion { get; private set; }
         /// <summary>The ModifiedAt property</summary>
-        public DateTimeOffset? ModifiedAt { get; private set; }
+        public DateTimeOffset? ModifiedAt { get; set; }
         /// <summary>The Name property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        [Display(Name = "Key.Name")]
-        [LocalizedRequired]
-        [LocalizedMaxLength(255)]
         public string? Name { get; set; }
 #nullable restore
 #else
-        [Display(Name = "Key.Name")]
-        [LocalizedRequired]
-        [LocalizedMaxLength(255)]
         public string Name { get; set; }
 #endif
-        /// <summary>The ServiceClass property</summary>
-        public global::Sacloud.Sdk.KMS.Models.KeyServiceClassEnum? ServiceClass { get; private set; }
-        /// <summary>The Status property</summary>
-        public global::Sacloud.Sdk.KMS.Models.KeyStatusEnum? Status { get; private set; }
+        /// <summary>* `cloud/kms/key` - 通常* `cloud/kms/key/legacy` - レガシー</summary>
+        public global::Sacloud.Sdk.KMS.Models.Key_ServiceClass? ServiceClass { get; private set; }
+        /// <summary>* `active` - 有効* `restricted` - 制限付き* `suspended` - 一時停止* `pending_destruction` - 削除保留* `destroyed` - 削除済み</summary>
+        public global::Sacloud.Sdk.KMS.Models.Key_Status? Status { get; private set; }
         /// <summary>The Tags property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        [Display(Name = "Key.Tags")]
-        [LocalizedRequired]
-        [LocalizedNotEmptyArray]
         public List<string>? Tags { get; set; }
 #nullable restore
 #else
-        [Display(Name = "Key.Tags")]
-        [LocalizedRequired]
-        [LocalizedNotEmptyArray]
         public List<string> Tags { get; set; }
 #endif
         /// <summary>
@@ -101,14 +86,15 @@ namespace Sacloud.Sdk.KMS.Models
             return new Dictionary<string, Action<IParseNode>>
             {
                 { "CreatedAt", n => { CreatedAt = n.GetDateTimeOffsetValue(); } },
+                { "DeletionScheduledAfter", n => { DeletionScheduledAfter = n.GetDateTimeOffsetValue(); } },
                 { "Description", n => { Description = n.GetStringValue(); } },
                 { "ID", n => { ID = n.GetStringValue(); } },
-                { "KeyOrigin", n => { KeyOrigin = n.GetEnumValue<global::Sacloud.Sdk.KMS.Models.KeyOriginEnum>(); } },
+                { "KeyOrigin", n => { KeyOrigin = n.GetEnumValue<global::Sacloud.Sdk.KMS.Models.Key_KeyOrigin>(); } },
                 { "LatestVersion", n => { LatestVersion = n.GetIntValue(); } },
                 { "ModifiedAt", n => { ModifiedAt = n.GetDateTimeOffsetValue(); } },
                 { "Name", n => { Name = n.GetStringValue(); } },
-                { "ServiceClass", n => { ServiceClass = n.GetEnumValue<global::Sacloud.Sdk.KMS.Models.KeyServiceClassEnum>(); } },
-                { "Status", n => { Status = n.GetEnumValue<global::Sacloud.Sdk.KMS.Models.KeyStatusEnum>(); } },
+                { "ServiceClass", n => { ServiceClass = n.GetEnumValue<global::Sacloud.Sdk.KMS.Models.Key_ServiceClass>(); } },
+                { "Status", n => { Status = n.GetEnumValue<global::Sacloud.Sdk.KMS.Models.Key_Status>(); } },
                 { "Tags", n => { Tags = n.GetCollectionOfPrimitiveValues<string>()?.AsList(); } },
             };
         }
@@ -119,7 +105,9 @@ namespace Sacloud.Sdk.KMS.Models
         public virtual void Serialize(ISerializationWriter writer)
         {
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
+            writer.WriteDateTimeOffsetValue("CreatedAt", CreatedAt);
             writer.WriteStringValue("Description", Description);
+            writer.WriteDateTimeOffsetValue("ModifiedAt", ModifiedAt);
             writer.WriteStringValue("Name", Name);
             writer.WriteCollectionOfPrimitiveValues<string>("Tags", Tags);
             writer.WriteAdditionalData(AdditionalData);

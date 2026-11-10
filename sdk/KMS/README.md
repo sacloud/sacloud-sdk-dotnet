@@ -24,15 +24,17 @@
 ### 本 SDK で対応している API バージョン情報
 
 - OpenAPI 定義:
-  - ファイルパス: `sdk/KMS/openapi-spec/1.0.0/openapi.json`
+    - ファイルパス: `sdk/KMS/openapi-spec/1.2.0/security-encryption-api.yaml`
+    - OpenAPI バージョン: 3.0.3
 - KMSのAPIバージョン:
-  - `info.version`:`1.0.0`
+    - `info.version`:`1.2.0`
 - ベース URL:
   - `https://secure.sakura.ad.jp/cloud/zone/{zone}/api/cloud/1.1`
   - 本 SDK からのすべての API 呼び出しは、上記ベース URL を基点として実行されます。
 - 利用可能なゾーン:
   - `is1a` - 石狩第1ゾーン
   - `is1b` - 石狩第2ゾーン
+  - `is1c` - 石狩第3ゾーン
   - `tk1a` - 東京第1ゾーン
   - `tk1b` - 東京第2ゾーン
 
@@ -272,7 +274,7 @@ KMSClient client = new KMSClient(adapter, KMSClient.SakuraCloudZone.Is1a, logger
 KMSClient client = new KMSClient(adapter, KMSClient.SakuraCloudZone.Is1a);
 ```
 
-利用可能なゾーンは `Is1a` / `Is1b` / `Tk1a` / `Tk1b` です。ゾーン指定なしのコンストラクタを使用した場合は `is1a` が既定値として利用されます。
+利用可能なゾーンは `Is1a` / `Is1b` / `Is1c` / `Tk1a` / `Tk1b` です。ゾーン指定なしのコンストラクタを使用した場合は `is1a` が既定値として利用されます。
 
 ### ログ出力と運用上の注意
 
@@ -308,8 +310,18 @@ KMS キーに対する各種操作の API 呼び出し例を示します。
 ### キー一覧取得
 
 ```csharp
-PaginatedKeyList keys = await client.Kms.Keys.GetAsync();
+using Sacloud.Sdk.KMS.Models;
+
+PaginatedKeyList keys = await client.Kms.Keys.GetAsync(
+    requestConfiguration =>
+    {
+        requestConfiguration.QueryParameters.Count = 100;
+        requestConfiguration.QueryParameters.From = 0;
+    }
+);
 ```
+
+`Count` と `From` を省略する場合は、引数なしで `GetAsync()` を呼び出します。
 
 ### キー作成
 
@@ -317,9 +329,9 @@ PaginatedKeyList keys = await client.Kms.Keys.GetAsync();
 using Sacloud.Sdk.KMS.Models;
 using System.Collections.Generic;
 
-WrappedCreateKey body = new WrappedCreateKey
+WrappedCreateKeyRequest body = new WrappedCreateKeyRequest
 {
-    Key = new CreateKey
+    Key = new CreateKeyRequest
     {
         Name = "<YOUR_KEY_NAME>",
         Description = "KMS sample key",
@@ -327,7 +339,8 @@ WrappedCreateKey body = new WrappedCreateKey
     }
 };
 
-WrappedCreateKey created = await client.Kms.Keys.PostAsync(body);
+WrappedCreateKeyResponse created = await client.Kms.Keys.PostAsync(body);
+Console.WriteLine($"Created key ID: {created.Key?.ID}");
 ```
 
 ### キー詳細取得
@@ -346,11 +359,11 @@ using System.Text;
 string plainText = "Hello KMS";
 string plainBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(plainText));
 
-WrappedKeyPlain encryptBody = new WrappedKeyPlain
+WrappedEncryptionRequest encryptBody = new WrappedEncryptionRequest
 {
-    Key = new KeyPlain
+    Key = new EncryptionRequest
     {
-        Algo = KeyEncryptAlgoEnum.Aes256Gcm,
+        Algo = EncryptionRequest_Algo.Aes256Gcm,
         Plain = plainBase64
     }
 };
@@ -365,9 +378,9 @@ using Sacloud.Sdk.KMS.Models;
 using System;
 using System.Text;
 
-WrappedKeyCipher decryptBody = new WrappedKeyCipher
+WrappedDecryptionRequest decryptBody = new WrappedDecryptionRequest
 {
-    Key = new KeyCipher
+    Key = new DecryptionRequest
     {
         Cipher = "<BASE64_CIPHER_TEXT>"
     }
@@ -462,19 +475,14 @@ KMS SDK では、HTTP 4xx/5xx のエラー応答を共通エラー型 `Sacloud.S
 
 本 SDK は .NET Standard 2.0 対応のライブラリです。そのため、 .NET 6 以降を含む、 .NET Standard 2.0 互換ランタイムで利用できます。
 
-### Q. 他のサービス(AppRun専有型やEventBusなど)でも同じように使えますか？
-本 README は KMS `(Sacloud.Sdk.KMS)` 向けの説明です。 同一リポジトリ内には AppRun専有型 や EventBus、Workflows など他サービス向けの SDK も含まれていますが、 それぞれ `sdk/<ServiceName>/` 配下に独自の README とサンプルが用意される想定です。 基本的な考え方（.NET プロジェクトへのパッケージ追加、認証、クライアント初期化、ログ設定など）は共通ですが、 サービスごとに利用する API やユースケースが異なるため、対象サービスの README も併せて参照してください。
-
-KMS SDK を利用するだけであれば、通常は本パッケージ `Sacloud.Sdk.KMS` を参照すれば十分であり、 共通ライブラリプロジェクト (sdk/Shared) を意識する必要はありません。
-
 ### Q. ゾーンはどう選べばいいですか？
 
 `KMSClient` コンストラクタの `SakuraCloudZone` で選択できます。
 
 - `Is1a`
 - `Is1b`
+- `Is1c`
 - `Tk1a`
 - `Tk1b`
 
 利用するリソース配置に合わせて選択してください。
-

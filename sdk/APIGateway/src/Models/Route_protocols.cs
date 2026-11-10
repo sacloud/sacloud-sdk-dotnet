@@ -7,14 +7,6 @@ namespace Sacloud.Sdk.APIGateway.Models
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
     public enum Route_protocols
     {
-        [EnumMember(Value = "http,https")]
-        #pragma warning disable CS1591
-        HttpHttps,
-        #pragma warning restore CS1591
-        [EnumMember(Value = "http")]
-        #pragma warning disable CS1591
-        Http,
-        #pragma warning restore CS1591
         [EnumMember(Value = "https")]
         #pragma warning disable CS1591
         Https,

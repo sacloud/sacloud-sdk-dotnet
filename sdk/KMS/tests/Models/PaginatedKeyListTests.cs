@@ -45,9 +45,10 @@ public class PaginatedKeyListTests
         var deserializers = model.GetFieldDeserializers();
 
         Assert.NotNull(deserializers);
-        Assert.Equal(4, deserializers.Count);
+        Assert.Equal(5, deserializers.Count);
         Assert.True(deserializers.ContainsKey("Count"));
         Assert.True(deserializers.ContainsKey("From"));
+        Assert.True(deserializers.ContainsKey("is_ok"));
         Assert.True(deserializers.ContainsKey("Keys"));
         Assert.True(deserializers.ContainsKey("Total"));
     }
@@ -71,6 +72,10 @@ public class PaginatedKeyListTests
         var model = new PaginatedKeyList();
         var deserializers = model.GetFieldDeserializers();
         var parseNode = Substitute.For<IParseNode>();
+
+        parseNode.GetBoolValue().Returns(true);
+        deserializers["is_ok"](parseNode);
+        Assert.True(model.IsOk);
 
         parseNode.GetIntValue().Returns(10);
         deserializers["Count"](parseNode);
@@ -101,6 +106,7 @@ public class PaginatedKeyListTests
         {
             Count = 2,
             From = 0,
+            IsOk = true,
             Total = 10,
             Keys = new List<Key>
             {
@@ -121,6 +127,7 @@ public class PaginatedKeyListTests
         var deserializedModel = parseNode.GetObjectValue(PaginatedKeyList.CreateFromDiscriminatorValue);
 
         Assert.NotNull(deserializedModel);
+        Assert.Equal(originalModel.IsOk, deserializedModel.IsOk);
         Assert.Equal(originalModel.Count, deserializedModel.Count);
         Assert.Equal(originalModel.From, deserializedModel.From);
         Assert.Equal(originalModel.Total, deserializedModel.Total);

@@ -2,7 +2,6 @@ using Microsoft.Kiota.Abstractions.Serialization;
 using Microsoft.Kiota.Serialization.Json;
 using NSubstitute;
 using Sacloud.Sdk.KMS.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace Sacloud.Sdk.KMS.Tests.Models;
 
@@ -46,8 +45,9 @@ public class KeyTests
         var deserializers = model.GetFieldDeserializers();
 
         Assert.NotNull(deserializers);
-        Assert.Equal(10, deserializers.Count);
+        Assert.Equal(11, deserializers.Count);
         Assert.True(deserializers.ContainsKey("CreatedAt"));
+        Assert.True(deserializers.ContainsKey("DeletionScheduledAfter"));
         Assert.True(deserializers.ContainsKey("Description"));
         Assert.True(deserializers.ContainsKey("ID"));
         Assert.True(deserializers.ContainsKey("KeyOrigin"));
@@ -84,6 +84,11 @@ public class KeyTests
         deserializers["CreatedAt"](parseNode);
         Assert.Equal(testDate, model.CreatedAt);
 
+        var deletionScheduledAfter = DateTimeOffset.Parse("2024-04-15T10:30:00Z");
+        parseNode.GetDateTimeOffsetValue().Returns(deletionScheduledAfter);
+        deserializers["DeletionScheduledAfter"](parseNode);
+        Assert.Equal(deletionScheduledAfter, model.DeletionScheduledAfter);
+
         parseNode.GetStringValue().Returns("Test description");
         deserializers["Description"](parseNode);
         Assert.Equal("Test description", model.Description);
@@ -92,9 +97,9 @@ public class KeyTests
         deserializers["ID"](parseNode);
         Assert.Equal("key-123", model.ID);
 
-        parseNode.GetEnumValue<KeyOriginEnum>().Returns(KeyOriginEnum.Generated);
+        parseNode.GetEnumValue<Key_KeyOrigin>().Returns(Key_KeyOrigin.Generated);
         deserializers["KeyOrigin"](parseNode);
-        Assert.Equal(KeyOriginEnum.Generated, model.KeyOrigin);
+        Assert.Equal(Key_KeyOrigin.Generated, model.KeyOrigin);
 
         parseNode.GetIntValue().Returns(5);
         deserializers["LatestVersion"](parseNode);
@@ -109,13 +114,13 @@ public class KeyTests
         deserializers["Name"](parseNode);
         Assert.Equal("test-key-name", model.Name);
 
-        parseNode.GetEnumValue<KeyServiceClassEnum>().Returns(KeyServiceClassEnum.CloudKmsKey);
+        parseNode.GetEnumValue<Key_ServiceClass>().Returns(Key_ServiceClass.CloudKmsKey);
         deserializers["ServiceClass"](parseNode);
-        Assert.Equal(KeyServiceClassEnum.CloudKmsKey, model.ServiceClass);
+        Assert.Equal(Key_ServiceClass.CloudKmsKey, model.ServiceClass);
 
-        parseNode.GetEnumValue<KeyStatusEnum>().Returns(KeyStatusEnum.Active);
+        parseNode.GetEnumValue<Key_Status>().Returns(Key_Status.Active);
         deserializers["Status"](parseNode);
-        Assert.Equal(KeyStatusEnum.Active, model.Status);
+        Assert.Equal(Key_Status.Active, model.Status);
 
         var tagsList = new List<string> { "tag1", "tag2" };
         parseNode.GetCollectionOfPrimitiveValues<string>().Returns(tagsList);
@@ -235,128 +240,5 @@ public class KeyTests
         Assert.Equal(9, model.ModifiedAt.Value.Hour);
         Assert.Equal(15, model.ModifiedAt.Value.Minute);
         Assert.Equal(30, model.ModifiedAt.Value.Second);
-    }
-
-    /// <summary>
-    /// Nameがnullの場合にバリデーションエラーになることを確認
-    /// </summary>
-    [Fact]
-    public void Key_Validation_WithNullName_ReturnsValidationError()
-    {
-        var model = new Key
-        {
-            Description = "Test description",
-            Tags = new List<string> { "tag1" }
-        };
-
-        var validationContext = new ValidationContext(model);
-        var validationResults = new List<ValidationResult>();
-        var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
-
-        Assert.False(isValid);
-        Assert.Contains(validationResults, r => r.MemberNames.Contains("Name"));
-    }
-
-    /// <summary>
-    /// Descriptionがnullの場合にバリデーションエラーになることを確認
-    /// </summary>
-    [Fact]
-    public void Key_Validation_WithNullDescription_ReturnsValidationError()
-    {
-        var model = new Key
-        {
-            Name = "Test name",
-            Tags = new List<string> { "tag1" }
-        };
-
-        var validationContext = new ValidationContext(model);
-        var validationResults = new List<ValidationResult>();
-        var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
-
-        Assert.False(isValid);
-        Assert.Contains(validationResults, r => r.MemberNames.Contains("Description"));
-    }
-
-    /// <summary>
-    /// Tagsがnullの場合にバリデーションエラーになることを確認
-    /// </summary>
-    [Fact]
-    public void Key_Validation_WithNullTags_ReturnsValidationError()
-    {
-        var model = new Key
-        {
-            Name = "Test name",
-            Description = "Test description"
-        };
-
-        var validationContext = new ValidationContext(model);
-        var validationResults = new List<ValidationResult>();
-        var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
-
-        Assert.False(isValid);
-        Assert.Contains(validationResults, r => r.MemberNames.Contains("Tags"));
-    }
-
-    /// <summary>
-    /// Nameが255文字を超える場合にバリデーションエラーになることを確認
-    /// </summary>
-    [Fact]
-    public void Key_Validation_WithNameExceedingMaxLength_ReturnsValidationError()
-    {
-        var model = new Key
-        {
-            Name = new string('a', 256),
-            Description = "Test description",
-            Tags = new List<string> { "tag1" }
-        };
-
-        var validationContext = new ValidationContext(model);
-        var validationResults = new List<ValidationResult>();
-        var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
-
-        Assert.False(isValid);
-        Assert.Contains(validationResults, r => r.MemberNames.Contains("Name"));
-    }
-
-    /// <summary>
-    /// すべての必須フィールドが設定されている場合にバリデーションが成功することを確認
-    /// </summary>
-    [Fact]
-    public void Key_Validation_WithAllRequiredFields_PassesValidation()
-    {
-        var model = new Key
-        {
-            Name = "Test name",
-            Description = "Test description",
-            Tags = new List<string> { "tag1", "tag2" }
-        };
-
-        var validationContext = new ValidationContext(model);
-        var validationResults = new List<ValidationResult>();
-        var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
-
-        Assert.True(isValid);
-        Assert.Empty(validationResults);
-    }
-
-    /// <summary>
-    /// 空のTagsリストでバリデーションエラーになることを確認
-    /// </summary>
-    [Fact]
-    public void Key_Validation_WithEmptyTagsList_ReturnsValidationError()
-    {
-        var model = new Key
-        {
-            Name = "Test name",
-            Description = "Test description",
-            Tags = new List<string>()
-        };
-
-        var validationContext = new ValidationContext(model);
-        var validationResults = new List<ValidationResult>();
-        var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
-
-        Assert.False(isValid);
-        Assert.Contains(validationResults, r => r.MemberNames.Contains("Tags"));
     }
 }

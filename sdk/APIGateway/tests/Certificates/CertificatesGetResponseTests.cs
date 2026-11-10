@@ -66,14 +66,15 @@ public class CertificatesGetResponseTests
         var model = new CertificatesGetResponse();
         var deserializers = model.GetFieldDeserializers();
         var parseNode = Substitute.For<IParseNode>();
-        var certificateDto = new CertificateDTO
+        var getCertificates = new GetCertificates
         {
-            Certificates = [new Certificate { Name = "test-cert" }]
+            AutoIssueLimit = 10,
+            Certificates = [new GetCertificates_certificates { Name = "test-cert" }]
         };
         parseNode.GetObjectValue(
-            Arg.Any<ParsableFactory<CertificateDTO>>()).Returns(certificateDto);
+            Arg.Any<ParsableFactory<GetCertificates>>()).Returns(getCertificates);
         deserializers["apigw"](parseNode);
-        Assert.Equal(certificateDto, model.Apigw);
+        Assert.Equal(getCertificates, model.Apigw);
     }
 
     /// <summary>
@@ -84,11 +85,19 @@ public class CertificatesGetResponseTests
     {
         var originalModel = new CertificatesGetResponse
         {
-            Apigw = new CertificateDTO
+            Apigw = new GetCertificates
             {
+                AutoIssueLimit = 10,
                 Certificates =
                 [
-                    new Certificate { Name = "test-cert" }
+                    new GetCertificates_certificates
+                    {
+                        Name = "test-cert",
+                        Sans = ["www.test-cert.example"],
+                        Type = GetCertificates_certificates_type.Auto,
+                        Status = GetCertificates_certificates_status.Valid,
+                        StatusMessage = "valid"
+                    }
                 ]
             },
             AdditionalData = new Dictionary<string, object>
@@ -107,7 +116,14 @@ public class CertificatesGetResponseTests
         var deserializedModel = parseNode.GetObjectValue(CertificatesGetResponse.CreateFromDiscriminatorValue);
         Assert.NotNull(deserializedModel);
         Assert.NotNull(deserializedModel.Apigw);
+        Assert.Equal(10, deserializedModel.Apigw.AutoIssueLimit);
         Assert.NotNull(deserializedModel.Apigw.Certificates);
+        Assert.Single(deserializedModel.Apigw.Certificates);
+        Assert.Equal("test-cert", deserializedModel.Apigw.Certificates[0].Name);
+        Assert.Equal(["www.test-cert.example"], deserializedModel.Apigw.Certificates[0].Sans);
+        Assert.Equal(GetCertificates_certificates_type.Auto, deserializedModel.Apigw.Certificates[0].Type);
+        Assert.Equal(GetCertificates_certificates_status.Valid, deserializedModel.Apigw.Certificates[0].Status);
+        Assert.Equal("valid", deserializedModel.Apigw.Certificates[0].StatusMessage);
         Assert.NotNull(deserializedModel.AdditionalData);
         Assert.True(deserializedModel.AdditionalData.ContainsKey("extraKey"));
     }
