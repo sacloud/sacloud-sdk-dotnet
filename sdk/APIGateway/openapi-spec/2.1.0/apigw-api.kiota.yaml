@@ -1,12 +1,12 @@
 openapi: "3.0.3"
 info:
-  version: "2.0.1"
-  title: "API Gateway APIドキュメント"
+  version: "2.1.0"
+  title: "API Gateway 正式版 APIドキュメント"
   contact:
     name: "SAKURA internet Inc."
   license:
     name: "Copyright(C) SAKURA internet Inc. all rights reserved."
-  description: "---\n「API Gateway」が提供するAPIの利用方法とサンプルを公開しております。\n# 基本的な使い方\n## APIキーの発行\nAPIを利用するためには、認証のための「APIキー」が必要です。事前にキーを発行しておきます。\nAPIキーは「ユーザーID」「パスワード」に相当する「トークン」と呼ばれる認証情報で構成されています。\n|   項目名   | APIキー発行時の項目名        | このドキュメント内での例             |\n|------------|------------------------------|--------------------------------------|\n| ユーザーID | アクセストークン(UUID)       | 01234567-89ab-cdef-0123-456789abcdef |\n| パスワード | アクセストークンシークレット | SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM |\n<div class=\"warning\">\n  <b>操作マニュアル</b><br />\n  <ul><li><a href=\"https://manual.sakura.ad.jp/cloud/api/apikey.html\">APIキー | さくらのクラウド ドキュメント</a></li></ul>\n</div>\n\n---\n# 利用例\n\nAPI Gatewayの利用を開始するには最低限、以下の登録が必要です。\n\n- 契約\n- アップストリーム（以下サービス）\n- エントリポイント（以下ルート）\n\n## 1.契約登録\n\n契約するプランによってサービス作成数等の制限とご利用料金に違いがあります。ご利用用途に合わせたプランをご選択ください。\n\n現在利用可能なプランを取得するには以下のような入力を行います。\n\n```sh\n# 入力サンプル\ncurl -u '01234567-89ab-cdef-0123-456789abcdef:SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM' \\\n     -X GET \\\n     https://secure.sakura.ad.jp/cloud/api/apigw/1.0/plans\n```\n\n取得できたプランのidを使用して、\n契約の登録をする場合は以下のような入力を行います。\n\n```sh\n# 入力サンプル\ncurl -u '01234567-89ab-cdef-0123-456789abcdef:SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM' \\\n     -X POST \\\n     -d '{\n               \"planId\": \"{plan_id}\",\n               \"name\": \"example-subscription-1\"\n          }' \\\n     https://secure.sakura.ad.jp/cloud/api/apigw/1.0/subscriptions\n```\n\n契約が完了すると、\n\n- サービス、ルートの作成、更新、削除\n- ユーザー、グループの作成、更新、削除\n- ルート認可の設定\n- リクエスト・レスポンス変換の設定\n- グループの所属設定\n- ユーザー認証情報の設定\n- 独自ドメイン・証明書の登録、更新、削除\n\nなどの操作が可能になります。\n\nまた、ご利用中のさくらクラウドアカウントの契約状況を確認するには以下のような入力を行います。\n\n```sh\n# 入力サンプル\ncurl -u '01234567-89ab-cdef-0123-456789abcdef:SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM' \\\n     -X GET \\\n     https://secure.sakura.ad.jp/cloud/api/apigw/1.0/subscriptions\n```\n\nご利用中の契約を解約する場合は以下のような入力を行います。\n\n```sh\n# 入力サンプル\ncurl -u '01234567-89ab-cdef-0123-456789abcdef:SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM' \\\n     -X DELETE \\\n     https://secure.sakura.ad.jp/cloud/api/apigw/1.0/subscriptions/{subscription_id}\n```\n\n## 2.サービスの作成、取得\n\nサービスとはリクエストの転送先に関する情報です。\n選択したプランによって作成可能数が異なります。\n\nサービスを作成するには以下のような入力を行います。\n\n```sh\n# 入力サンプル\ncurl -u '01234567-89ab-cdef-0123-456789abcdef:SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM' \\\n     -X POST \\\n     -d '{\n               \"name\": \"example-service-1\",\n               \"tags\": [\n                  \"tag1\",\n                  \"tag2\"\n               ],\n               \"protocol\": \"https\",\n               \"host\": \"xxx.example.jp\",\n               \"path\": \"/base\",\n               \"port\": 80,\n               \"retries\": 5,\n               \"connectTimeout\": 60000,\n               \"writeTimeout\": 60000,\n               \"readTimeout\": 60000,\n               \"authentication\": \"basic\",\n               \"subscription\": {\n                  \"id\": \"01234567-89ab-cdef-0123-456789abcdef\"\n               }\n          }' \\\n     https://secure.sakura.ad.jp/cloud/api/apigw/1.0/services\n```\n\n上記で作成したサービスを取得するには以下のような入力を行います。\n\n```sh\n# 入力サンプル\ncurl -u '01234567-89ab-cdef-0123-456789abcdef:SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM' \\\n     -X GET \\\n     https://secure.sakura.ad.jp/cloud/api/apigw/1.0/services/{service_id}\n```\n\n## 3.ルートの作成、取得\n\nルートとは作成したサービスに対するエントリポイントです。\n必ず、紐づくサービスが必要になります。\n\nルートを作成するには以下のような入力を行います。\n\n```sh\n# 入力サンプル\ncurl -u '01234567-89ab-cdef-0123-456789abcdef:SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM' \\\n     -X POST \\\n     -d '{\n               \"name\": \"example-route-1\",\n               \"tags\": [\n                    \"tag1\",\n                    \"tag2\"\n               ],\n               \"protocols\": \"http,https\",\n               \"path\": \"/\",\n               \"methods\": [\n                    \"GET\",\n                    \"POST\"\n               ],\n               \"httpsRedirectStatusCode\": 426,\n               \"regexPriority\": 0,\n               \"stripPath\": false,\n               \"preserveHost\": true,\n               \"requestBuffering\": false,\n               \"responseBuffering\": false\n          }' \\\n     https://secure.sakura.ad.jp/cloud/api/apigw/1.0/services/{service_id}/routes\n```\n\n上記で作成したルートを取得するには以下のような入力を行います。\n\n```sh\n# 入力サンプル\ncurl -u '01234567-89ab-cdef-0123-456789abcdef:SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM' \\\n     -X GET \\\n     https://secure.sakura.ad.jp/cloud/api/apigw/1.0/services/{service_id}/routes/{route_id}\n```\n---\n"
+  description: "---\n「API Gateway」が提供するAPIの利用方法とサンプルを公開しております。\n# 基本的な使い方\n## APIキーの発行\nAPIを利用するためには、認証のための「APIキー」が必要です。事前にキーを発行しておきます。\nAPIキーは「ユーザーID」「パスワード」に相当する「トークン」と呼ばれる認証情報で構成されています。\n|   項目名   | APIキー発行時の項目名        | このドキュメント内での例             |\n|------------|------------------------------|--------------------------------------|\n| ユーザーID | アクセストークン(UUID)       | 01234567-89ab-cdef-0123-456789abcdef |\n| パスワード | アクセストークンシークレット | SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM |\n<div class=\"warning\">\n  <b>操作マニュアル</b><br />\n  <ul><li><a href=\"https://manual.sakura.ad.jp/cloud/api/apikey.html\">APIキー | さくらのクラウド ドキュメント</a></li></ul>\n</div>\n\n---\n# 利用例\n\nAPI Gatewayの利用を開始するには最低限、以下の登録が必要です。\n\n- 契約\n- アップストリーム（以下サービス）\n- エントリポイント（以下ルート）\n\n## 1.契約登録\n\n契約するプランによってサービス作成数等の制限とご利用料金に違いがあります。ご利用用途に合わせたプランをご選択ください。\n\n現在利用可能なプランを取得するには以下のような入力を行います。\n\n```sh\n# 入力サンプル\ncurl -u '01234567-89ab-cdef-0123-456789abcdef:SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM' \\\n     -X GET \\\n     https://secure.sakura.ad.jp/cloud/api/apigw/1.0/plans\n```\n\n取得できたプランのidを使用して、\n契約の登録をする場合は以下のような入力を行います。\n\n```sh\n# 入力サンプル\ncurl -u '01234567-89ab-cdef-0123-456789abcdef:SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM' \\\n     -X POST \\\n     -d '{\n               \"planId\": \"{plan_id}\",\n               \"name\": \"example-subscription-1\"\n          }' \\\n     https://secure.sakura.ad.jp/cloud/api/apigw/1.0/subscriptions\n```\n\n契約が完了すると、\n\n- サービス、ルートの作成、更新、削除\n- ユーザー、グループの作成、更新、削除\n- ルート認可の設定\n- リクエスト・レスポンス変換の設定\n- グループの所属設定\n- ユーザー認証情報の設定\n- 独自ドメイン・証明書の登録、更新、削除\n\nなどの操作が可能になります。\n\nまた、ご利用中のさくらクラウドアカウントの契約状況を確認するには以下のような入力を行います。\n\n```sh\n# 入力サンプル\ncurl -u '01234567-89ab-cdef-0123-456789abcdef:SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM' \\\n     -X GET \\\n     https://secure.sakura.ad.jp/cloud/api/apigw/1.0/subscriptions\n```\n\nご利用中の契約を解約する場合は以下のような入力を行います。\n\n```sh\n# 入力サンプル\ncurl -u '01234567-89ab-cdef-0123-456789abcdef:SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM' \\\n     -X DELETE \\\n     https://secure.sakura.ad.jp/cloud/api/apigw/1.0/subscriptions/{subscription_id}\n```\n\n## 2.サービスの作成、取得\n\nサービスとはリクエストの転送先に関する情報です。\n選択したプランによって作成可能数が異なります。\n\nサービスを作成するには以下のような入力を行います。\n\n```sh\n# 入力サンプル\ncurl -u '01234567-89ab-cdef-0123-456789abcdef:SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM' \\\n     -X POST \\\n     -d '{\n               \"name\": \"example-service-1\",\n               \"tags\": [\n                  \"tag1\",\n                  \"tag2\"\n               ],\n               \"protocol\": \"https\",\n               \"host\": \"xxx.example.jp\",\n               \"path\": \"/base\",\n               \"port\": 80,\n               \"retries\": 5,\n               \"connectTimeout\": 60000,\n               \"writeTimeout\": 60000,\n               \"readTimeout\": 60000,\n               \"authentication\": \"basic\",\n               \"subscription\": {\n                  \"id\": \"01234567-89ab-cdef-0123-456789abcdef\"\n               }\n          }' \\\n     https://secure.sakura.ad.jp/cloud/api/apigw/1.0/services\n```\n\n上記で作成したサービスを取得するには以下のような入力を行います。\n\n```sh\n# 入力サンプル\ncurl -u '01234567-89ab-cdef-0123-456789abcdef:SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM' \\\n     -X GET \\\n     https://secure.sakura.ad.jp/cloud/api/apigw/1.0/services/{service_id}\n```\n\n## 3.ルートの作成、取得\n\nルートとは作成したサービスに対するエントリポイントです。\n必ず、紐づくサービスが必要になります。\n\nルートを作成するには以下のような入力を行います。\n\n```sh\n# 入力サンプル\ncurl -u '01234567-89ab-cdef-0123-456789abcdef:SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM' \\\n     -X POST \\\n     -d '{\n               \"name\": \"example-route-1\",\n               \"tags\": [\n                    \"tag1\",\n                    \"tag2\"\n               ],\n               \"protocols\": \"https\",\n               \"path\": \"/\",\n               \"methods\": [\n                    \"GET\",\n                    \"POST\"\n               ],\n               \"httpsRedirectStatusCode\": 426,\n               \"regexPriority\": 0,\n               \"stripPath\": false,\n               \"preserveHost\": true,\n               \"requestBuffering\": false,\n               \"responseBuffering\": false\n          }' \\\n     https://secure.sakura.ad.jp/cloud/api/apigw/1.0/services/{service_id}/routes\n```\n\n上記で作成したルートを取得するには以下のような入力を行います。\n\n```sh\n# 入力サンプル\ncurl -u '01234567-89ab-cdef-0123-456789abcdef:SAMPLETOKENSAMPLETOKENSAMPLETOKENSAM' \\\n     -X GET \\\n     https://secure.sakura.ad.jp/cloud/api/apigw/1.0/services/{service_id}/routes/{route_id}\n```\n---\n"
 servers:
 - url: "https://secure.sakura.ad.jp/cloud/api/apigw/1.0/"
 paths:
@@ -1014,10 +1014,8 @@ paths:
           $ref: "#/components/responses/BadRequestResponse"
         401:
           $ref: "#/components/responses/UnauthorizedResponse"
-        409:
-          $ref: "#/components/responses/ConflictResponse"
-        422:
-          $ref: "#/components/responses/UnprocessableEntityResponse"
+        404:
+          $ref: "#/components/responses/NotFoundResponse"
         500:
           $ref: "#/components/responses/ServerErrorResponse"
     get:
@@ -1037,9 +1035,30 @@ paths:
                 - "apigw"
                 properties:
                   apigw:
-                    type: "object"
-                    properties: null
-                    $ref: "#/components/schemas/CertificateDTO"
+                    $ref: "#/components/schemas/GetCertificates"
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        401:
+          $ref: "#/components/responses/UnauthorizedResponse"
+        500:
+          $ref: "#/components/responses/ServerErrorResponse"
+  /certificates/acme:
+    post:
+      tags:
+      - "証明書"
+      summary: "AutoCertificate発行 API"
+      description: "証明書を自動発行します。"
+      operationId: "postCertificatesAcme"
+      requestBody:
+        description: "証明書情報"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CertificatesAcme"
+        required: true
+      responses:
+        202:
+          description: "成功時の返却値はありません。"
         400:
           $ref: "#/components/responses/BadRequestResponse"
         401:
@@ -1093,6 +1112,55 @@ paths:
           $ref: "#/components/responses/UnauthorizedResponse"
         404:
           $ref: "#/components/responses/NotFoundResponse"
+        500:
+          $ref: "#/components/responses/ServerErrorResponse"
+  /certificates/{certificateId}/acme/renew:
+    post:
+      tags:
+      - "証明書"
+      summary: "AutoCertificate有効期限更新 API"
+      description: "自動発行の証明書有効期限を更新します。"
+      operationId: "certificatesAcmeRenew"
+      parameters:
+      - $ref: "#/components/parameters/CertificateID"
+      responses:
+        202:
+          description: "成功時の返却値はありません。"
+        401:
+          $ref: "#/components/responses/UnauthorizedResponse"
+        404:
+          $ref: "#/components/responses/NotFoundResponse"
+        409:
+          $ref: "#/components/responses/ConflictResponse"
+        500:
+          $ref: "#/components/responses/ServerErrorResponse"
+  /certificates/{certificateId}/acme/reissue:
+    post:
+      tags:
+      - "証明書"
+      summary: "AutoCertificate再発行 API"
+      description: "証明書の識別名または証明書のSANに含めるドメインを更新します。"
+      operationId: "certificatesAcmeReissue"
+      parameters:
+      - $ref: "#/components/parameters/CertificateID"
+      requestBody:
+        description: "証明書情報"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CertificatesAcme"
+        required: true
+      responses:
+        202:
+          description: "成功時の返却値はありません。"
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        401:
+          $ref: "#/components/responses/UnauthorizedResponse"
+        404:
+          $ref: "#/components/responses/NotFoundResponse"
+        409:
+          $ref: "#/components/responses/ConflictResponse"
         500:
           $ref: "#/components/responses/ServerErrorResponse"
   /plans:
@@ -1404,6 +1472,11 @@ components:
           readOnly: true
           description: "更新日時"
       description: "各Entity共通のモデル"
+    AuthenticationMethods:
+      type: "array"
+      description: "OIDC認証フロー"
+      items:
+        $ref: "#/components/schemas/AuthenticationMethodsItem"
     Name:
       type: "string"
       description: "Unicode文字、数字、ハイフン、アンダースコア、ピリオドのみ許可"
@@ -1433,14 +1506,7 @@ components:
             description: "認証名<br>認証名は半角英数字およびアンダースコアのみを許可"
             example: "name"
           authenticationMethods:
-            type: "array"
-            description: "OIDC認証フロー"
-            items:
-              type: "string"
-              enum:
-              - "authorizationCodeFlow"
-              - "accessToken"
-              example: "accessToken"
+            $ref: "#/components/schemas/AuthenticationMethods"
           issuer:
             type: "string"
             description: "IdPに紐づくエンドポイント"
@@ -1783,10 +1849,8 @@ components:
         protocols:
           type: "string"
           enum:
-          - "http,https"
-          - "http"
           - "https"
-          example: "http,https"
+          example: "https"
           description: "IP制限を設定するプロトコル"
         restrictedBy:
           type: "string"
@@ -1828,10 +1892,8 @@ components:
           protocols:
             type: "string"
             enum:
-            - "http,https"
-            - "http"
             - "https"
-            example: "http,https"
+            example: "https"
             description: "Routeにアクセスするためのプロトコル"
           path:
             type: "string"
@@ -2112,6 +2174,13 @@ components:
           - "name"
           - "rsa"
           - "ecdsa"
+    CertificateAutoIssueLimit:
+      type: "object"
+      properties:
+        autoIssueLimit:
+          type: "integer"
+          description: "自動発行可能な証明書の上限数"
+          example: 5
     CertificateDetails:
       type: "object"
       properties:
@@ -2136,6 +2205,64 @@ components:
           description: "証明書の有効期限"
           example: "2022-12-31 23:59:59"
           readOnly: true
+    CertificatesAcme:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          description: "証明書の識別名<br>証明書名はUnicode文字、数字、ハイフン、アンダースコア、ピリオドのみ許可"
+          example: "name"
+        sans:
+          type: "array"
+          description: "証明書の Subject Alternative Name (SAN) に設定するドメイン一覧 ワイルドカードドメイン（*.example.com）は指定不可\n"
+          uniqueItems: true
+          items:
+            type: "string"
+          example:
+          - "example1.com"
+          - "example2.com"
+    GetCertificates:
+      allOf:
+      - $ref: "#/components/schemas/CertificateAutoIssueLimit"
+      - type: "object"
+        properties:
+          certificates:
+            type: "array"
+            items:
+              allOf:
+              - $ref: "#/components/schemas/Certificate"
+              - type: "object"
+                properties:
+                  type:
+                    type: "string"
+                    description: "証明書のタイプ"
+                    enum:
+                    - "auto"
+                    - "manual"
+                    example: "auto"
+                  status:
+                    type: "string"
+                    description: "証明書の状態"
+                    enum:
+                    - "valid"
+                    - "expired"
+                    - "issuing"
+                    - "renewing"
+                    - "issuance_failed"
+                    - "renewal_failed"
+                    example: "valid"
+                  statusMessage:
+                    type: "string"
+                    description: "status が issuance_failed・renewal_failed の場合、詳細なステータスメッセージが返却される。\n"
+                  sans:
+                    type: "array"
+                    description: "証明書の Subject Alternative Name (SAN) に設定するドメイン一覧 ワイルドカードドメイン（*.example.com）は指定不可\n"
+                    uniqueItems: true
+                    items:
+                      type: "string"
+                    example:
+                    - "example1.com"
+                    - "example2.com"
     DomainDTO:
       type: "object"
       properties:
@@ -2755,6 +2882,12 @@ components:
       - "HEAD"
       - "CONNECT"
       - "TRACE"
+    AuthenticationMethodsItem:
+      type: "string"
+      enum:
+      - "authorizationCodeFlow"
+      - "accessToken"
+      example: "accessToken"
   responses:
     BadRequestResponse:
       description: "Requestエラー"

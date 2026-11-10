@@ -18,10 +18,10 @@ namespace Sacloud.Sdk.APIGateway.Certificates
         /// <summary>The apigw property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public global::Sacloud.Sdk.APIGateway.Models.CertificateDTO? Apigw { get; set; }
+        public global::Sacloud.Sdk.APIGateway.Models.GetCertificates? Apigw { get; set; }
 #nullable restore
 #else
-        public global::Sacloud.Sdk.APIGateway.Models.CertificateDTO Apigw { get; set; }
+        public global::Sacloud.Sdk.APIGateway.Models.GetCertificates Apigw { get; set; }
 #endif
         /// <summary>
         /// Instantiates a new <see cref="global::Sacloud.Sdk.APIGateway.Certificates.CertificatesGetResponse"/> and sets the default values.
@@ -48,7 +48,7 @@ namespace Sacloud.Sdk.APIGateway.Certificates
         {
             return new Dictionary<string, Action<IParseNode>>
             {
-                { "apigw", n => { Apigw = n.GetObjectValue<global::Sacloud.Sdk.APIGateway.Models.CertificateDTO>(global::Sacloud.Sdk.APIGateway.Models.CertificateDTO.CreateFromDiscriminatorValue); } },
+                { "apigw", n => { Apigw = n.GetObjectValue<global::Sacloud.Sdk.APIGateway.Models.GetCertificates>(global::Sacloud.Sdk.APIGateway.Models.GetCertificates.CreateFromDiscriminatorValue); } },
             };
         }
         /// <summary>
@@ -58,7 +58,7 @@ namespace Sacloud.Sdk.APIGateway.Certificates
         public virtual void Serialize(ISerializationWriter writer)
         {
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
-            writer.WriteObjectValue<global::Sacloud.Sdk.APIGateway.Models.CertificateDTO>("apigw", Apigw);
+            writer.WriteObjectValue<global::Sacloud.Sdk.APIGateway.Models.GetCertificates>("apigw", Apigw);
             writer.WriteAdditionalData(AdditionalData);
         }
     }

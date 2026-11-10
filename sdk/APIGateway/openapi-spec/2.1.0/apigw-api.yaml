@@ -1,8 +1,8 @@
 openapi: 3.0.3
 
 info:
-  version: 2.0.1
-  title: API Gateway APIドキュメント
+  version: 2.1.0
+  title: API Gateway 正式版 APIドキュメント
   # description: "---\n"
   contact:
     name: SAKURA internet Inc.
@@ -149,7 +149,7 @@ info:
                         "tag1",
                         "tag2"
                    ],
-                   "protocols": "http,https",
+                   "protocols": "https",
                    "path": "/",
                    "methods": [
                         "GET",
@@ -1198,10 +1198,8 @@ paths:
           $ref: "#/components/responses/BadRequestResponse"
         "401":
           $ref: "#/components/responses/UnauthorizedResponse"
-        "409":
-          $ref: "#/components/responses/ConflictResponse"
-        "422":
-          $ref: "#/components/responses/UnprocessableEntityResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
         "500":
           $ref: "#/components/responses/ServerErrorResponse"
     get:
@@ -1221,9 +1219,30 @@ paths:
                   - apigw
                 properties:
                   apigw:
-                    type: object
-                    properties:
-                    $ref: "#/components/schemas/CertificateDTO"
+                    $ref: "#/components/schemas/GetCertificates"
+        "400":
+          $ref: "#/components/responses/BadRequestResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedResponse"
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+  /certificates/acme:
+    post:
+      tags:
+        - 証明書
+      summary: AutoCertificate発行 API
+      description: 証明書を自動発行します。
+      operationId: postCertificatesAcme
+      requestBody:
+        description: 証明書情報
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CertificatesAcme"
+        required: true
+      responses:
+        "202":
+          description: 成功時の返却値はありません。
         "400":
           $ref: "#/components/responses/BadRequestResponse"
         "401":
@@ -1277,6 +1296,55 @@ paths:
           $ref: "#/components/responses/UnauthorizedResponse"
         "404":
           $ref: "#/components/responses/NotFoundResponse"
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+  /certificates/{certificateId}/acme/renew:
+    post:
+      tags:
+        - 証明書
+      summary: AutoCertificate有効期限更新 API
+      description: 自動発行の証明書有効期限を更新します。
+      operationId: certificatesAcmeRenew
+      parameters:
+        - $ref: "#/components/parameters/CertificateID"
+      responses:
+        "202":
+          description: 成功時の返却値はありません。
+        "401":
+          $ref: "#/components/responses/UnauthorizedResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "409":
+          $ref: "#/components/responses/ConflictResponse"
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+  /certificates/{certificateId}/acme/reissue:
+    post:
+      tags:
+        - 証明書
+      summary: AutoCertificate再発行 API
+      description: 証明書の識別名または証明書のSANに含めるドメインを更新します。
+      operationId: certificatesAcmeReissue
+      parameters:
+        - $ref: "#/components/parameters/CertificateID"
+      requestBody:
+        description: 証明書情報
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CertificatesAcme"
+        required: true
+      responses:
+        "202":
+          description: 成功時の返却値はありません。
+        "400":
+          $ref: "#/components/responses/BadRequestResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "409":
+          $ref: "#/components/responses/ConflictResponse"
         "500":
           $ref: "#/components/responses/ServerErrorResponse"
   /plans:
@@ -1811,7 +1879,7 @@ components:
           format: uuid
           description: サブスクリプションID
           example: 7c8d78bc-e4a3-4600-b70a-f5fe802dc1ba
-        name :
+        name:
           type: string
           description: サブスクリプション名
           example: "example-subscription-1"
@@ -1976,10 +2044,8 @@ components:
             protocols:
               type: string
               enum:
-                - http,https
-                - http
                 - https
-              example: "http,https"
+              example: "https"
               description: IP制限を設定するプロトコル
             restrictedBy:
               type: string
@@ -2019,10 +2085,8 @@ components:
             protocols:
               type: string
               enum:
-                - http,https
-                - http
                 - https
-              example: "http,https"
+              example: "https"
               description: Routeにアクセスするためのプロトコル
             path:
               type: string
@@ -2301,6 +2365,13 @@ components:
                 - name
                 - rsa
                 - ecdsa
+    CertificateAutoIssueLimit:
+      type: object
+      properties:
+        autoIssueLimit:
+          type: integer
+          description: 自動発行可能な証明書の上限数
+          example: 5
     CertificateDetails:
       type: object
       properties:
@@ -2373,6 +2444,63 @@ components:
           description: 証明書の有効期限
           example: "2022-12-31 23:59:59"
           readOnly: true
+    CertificatesAcme:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 証明書の識別名<br>証明書名はUnicode文字、数字、ハイフン、アンダースコア、ピリオドのみ許可
+          example: name
+        sans:
+          type: array
+          description: |
+            証明書の Subject Alternative Name (SAN) に設定するドメイン一覧 ワイルドカードドメイン（*.example.com）は指定不可
+          uniqueItems: true
+          items:
+            type: string
+          example: ["example1.com", "example2.com"]
+    GetCertificates:
+      allOf:
+        - $ref: "#/components/schemas/CertificateAutoIssueLimit"
+        - type: object
+          properties:
+            certificates:
+              type: array
+              items:
+                allOf:
+                  - $ref: "#/components/schemas/Certificate"
+                  - type: object
+                    properties:
+                      type:
+                        type: string
+                        description: 証明書のタイプ
+                        enum:
+                          - auto
+                          - manual
+                        example: auto
+                      status:
+                        type: string
+                        description: 証明書の状態
+                        enum:
+                         - valid
+                         - expired
+                         - issuing
+                         - renewing
+                         - issuance_failed
+                         - renewal_failed
+                        example: valid
+                      statusMessage:
+                        type: string
+                        description: |
+                          status が issuance_failed・renewal_failed の場合、詳細なステータスメッセージが返却される。
+                      sans:
+                        type: array
+                        description: |
+                          証明書の Subject Alternative Name (SAN) に設定するドメイン一覧 ワイルドカードドメイン（*.example.com）は指定不可
+                        uniqueItems: true
+                        items:
+                          type: string
+                        example: ["example1.com", "example2.com"]
     DomainDTO:
       type: object
       properties:
@@ -2810,7 +2938,7 @@ components:
               description: maxRequestsの上限が適用される期間の単位
               example: month
             overage:
-                $ref: "#/components/schemas/Overage"
+              $ref: "#/components/schemas/Overage"
     Overage:
       type: object
       properties:
@@ -2892,7 +3020,7 @@ components:
               description: maxRequestsの上限が適用される期間の単位
               example: month
             overage:
-                $ref: "#/components/schemas/Overage"
+              $ref: "#/components/schemas/Overage"
     SubscriptionList:
       properties:
         subscriptions:

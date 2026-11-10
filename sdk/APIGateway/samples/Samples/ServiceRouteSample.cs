@@ -20,7 +20,7 @@ class ServiceRouteSample(APIGatewayClient client, Guid serviceId, string domainN
         {
             Name = "sample-route",
             Tags = ["Sample", "CreatedByAPI", "ServiceRouteSample"],
-            Protocols = Route_protocols.HttpHttps,
+            Protocols = Route_protocols.Https,
             Methods =
             [
                 HTTPMethod.GET,
