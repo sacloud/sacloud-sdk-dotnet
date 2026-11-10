@@ -1,6 +1,6 @@
 {
-  "descriptionHash": "EA7174E6AA2FCF18FC24291FE8BDA4304E7E603E8A9E9349D563D396C976425EE4EC93860F6D3F330016C002CF03E4B0EC680B76836CC1A9658EF0820C056BCA",
-  "descriptionLocation": "../openapi-spec/1.0.0/openapi.kiota.json",
+  "descriptionHash": "007FE6CD91F1FF350ACFADCF06987C46D52468C7F231BA0BB450A6B9051410A611534568BE6A66C79B85E348409251F6FF01A6D0D7813FF92523293E7DC92EC5",
+  "descriptionLocation": "../openapi-spec/1.2.0/security-encryption-api.kiota.yaml",
   "lockFileVersion": "1.0.0",
   "kiotaVersion": "1.29.0",
   "clientClassName": "KMSClient",
@@ -29,13 +29,7 @@
     "multipart/form-data;q=0.1"
   ],
   "includePatterns": [
-    "/kms/keys",
-    "/kms/keys/{resource_id}",
-    "/kms/keys/{resource_id}/rotate",
-    "/kms/keys/{resource_id}/status",
-    "/kms/keys/{resource_id}/schedule-destruction",
-    "/kms/keys/{resource_id}/encrypt",
-    "/kms/keys/{resource_id}/decrypt"
+    "/kms/**"
   ],
   "excludePatterns": [],
   "disabledValidationRules": []

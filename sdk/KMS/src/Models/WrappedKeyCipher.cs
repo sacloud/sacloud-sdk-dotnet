@@ -5,7 +5,6 @@ using Microsoft.Kiota.Abstractions.Serialization;
 using System.Collections.Generic;
 using System.IO;
 using System;
-using System.ComponentModel.DataAnnotations;
 namespace Sacloud.Sdk.KMS.Models
 {
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
@@ -15,16 +14,14 @@ namespace Sacloud.Sdk.KMS.Models
     {
         /// <summary>Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.</summary>
         public IDictionary<string, object> AdditionalData { get; set; }
+        /// <summary>The is_ok property</summary>
+        public bool? IsOk { get; set; }
         /// <summary>The Key property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        [Display(Name = "Key")]
-        [LocalizedRequired]
         public global::Sacloud.Sdk.KMS.Models.KeyCipher? Key { get; set; }
 #nullable restore
 #else
-        [Display(Name = "Key")]
-        [LocalizedRequired]
         public global::Sacloud.Sdk.KMS.Models.KeyCipher Key { get; set; }
 #endif
         /// <summary>
@@ -52,6 +49,7 @@ namespace Sacloud.Sdk.KMS.Models
         {
             return new Dictionary<string, Action<IParseNode>>
             {
+                { "is_ok", n => { IsOk = n.GetBoolValue(); } },
                 { "Key", n => { Key = n.GetObjectValue<global::Sacloud.Sdk.KMS.Models.KeyCipher>(global::Sacloud.Sdk.KMS.Models.KeyCipher.CreateFromDiscriminatorValue); } },
             };
         }
@@ -62,6 +60,7 @@ namespace Sacloud.Sdk.KMS.Models
         public virtual void Serialize(ISerializationWriter writer)
         {
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
+            writer.WriteBoolValue("is_ok", IsOk);
             writer.WriteObjectValue<global::Sacloud.Sdk.KMS.Models.KeyCipher>("Key", Key);
             writer.WriteAdditionalData(AdditionalData);
         }

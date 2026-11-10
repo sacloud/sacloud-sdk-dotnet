@@ -43,7 +43,7 @@ namespace Sacloud.Sdk.KMS.Kms.Keys
         /// <param name="pathParameters">Path parameters for the request</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
         /// <param name="loggerFactory">The logger factory to use for creating loggers.</param>
-        public KeysRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter, ILoggerFactory loggerFactory) : base(requestAdapter, "{+baseurl}/kms/keys", pathParameters)
+        public KeysRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter, ILoggerFactory loggerFactory) : base(requestAdapter, "{+baseurl}/kms/keys{?Count*,From*}", pathParameters)
         {
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _logger = _loggerFactory.CreateLogger<KeysRequestBuilder>();
@@ -54,7 +54,7 @@ namespace Sacloud.Sdk.KMS.Kms.Keys
         /// <param name="rawUrl">The raw URL to use for the request builder.</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
         /// <param name="loggerFactory">The logger factory to use for creating loggers.</param>
-        public KeysRequestBuilder(string rawUrl, IRequestAdapter requestAdapter, ILoggerFactory loggerFactory) : base(requestAdapter, "{+baseurl}/kms/keys", rawUrl)
+        public KeysRequestBuilder(string rawUrl, IRequestAdapter requestAdapter, ILoggerFactory loggerFactory) : base(requestAdapter, "{+baseurl}/kms/keys{?Count*,From*}", rawUrl)
         {
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _logger = _loggerFactory.CreateLogger<KeysRequestBuilder>();
@@ -64,11 +64,11 @@ namespace Sacloud.Sdk.KMS.Kms.Keys
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Sacloud.Sdk.KMS.Models.PaginatedKeyList?> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Sacloud.Sdk.KMS.Models.PaginatedKeyList?> GetAsync(Action<RequestConfiguration<global::Sacloud.Sdk.KMS.Kms.Keys.KeysRequestBuilder.KeysRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Sacloud.Sdk.KMS.Models.PaginatedKeyList> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Sacloud.Sdk.KMS.Models.PaginatedKeyList> GetAsync(Action<RequestConfiguration<global::Sacloud.Sdk.KMS.Kms.Keys.KeysRequestBuilder.KeysRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             // API呼び出し開始ログ
@@ -97,21 +97,21 @@ namespace Sacloud.Sdk.KMS.Kms.Keys
             catch (Exception ex)
             {
                 // その他のエラーはErrorレベルでログを出力
-                _logger?.LogError(ex, "キー一覧の取得中にエラーが発生しました。 {EndTime}", DateTime.UtcNow.ToString("o"));
+                _logger?.LogError(ex, "キー一覧の取得中にエラーが発生しました。 {ErrorTime}", DateTime.UtcNow.ToString("o"));
                 throw;
             }
         }
-        /// <returns>A <see cref="global::Sacloud.Sdk.KMS.Models.WrappedCreateKey"/></returns>
+        /// <returns>A <see cref="global::Sacloud.Sdk.KMS.Models.WrappedCreateKeyResponse"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Sacloud.Sdk.KMS.Models.WrappedCreateKey?> PostAsync(global::Sacloud.Sdk.KMS.Models.WrappedCreateKey body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Sacloud.Sdk.KMS.Models.WrappedCreateKeyResponse?> PostAsync(global::Sacloud.Sdk.KMS.Models.WrappedCreateKeyRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Sacloud.Sdk.KMS.Models.WrappedCreateKey> PostAsync(global::Sacloud.Sdk.KMS.Models.WrappedCreateKey body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Sacloud.Sdk.KMS.Models.WrappedCreateKeyResponse> PostAsync(global::Sacloud.Sdk.KMS.Models.WrappedCreateKeyRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             // リクエストボディのバリデーション
@@ -122,12 +122,13 @@ namespace Sacloud.Sdk.KMS.Kms.Keys
 
             try
             {
+                if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
                 var requestInfo = ToPostRequestInformation(body, requestConfiguration);
                 var errorMapping = new Dictionary<string, ParsableFactory<IParsable>>
                 {
                     { "XXX", ApiError.CreateFromDiscriminatorValue }
                 };
-                var result = await RequestAdapter.SendAsync<global::Sacloud.Sdk.KMS.Models.WrappedCreateKey>(requestInfo, global::Sacloud.Sdk.KMS.Models.WrappedCreateKey.CreateFromDiscriminatorValue, errorMapping, cancellationToken).ConfigureAwait(false);
+                var result = await RequestAdapter.SendAsync<global::Sacloud.Sdk.KMS.Models.WrappedCreateKeyResponse>(requestInfo, global::Sacloud.Sdk.KMS.Models.WrappedCreateKeyResponse.CreateFromDiscriminatorValue, errorMapping, cancellationToken).ConfigureAwait(false);
 
                 // 成功ログ
                 _logger?.LogInformation("キーの作成が完了しました。 {EndTime} [StatusCode, 201]", DateTime.UtcNow.ToString("o"));
@@ -151,11 +152,11 @@ namespace Sacloud.Sdk.KMS.Kms.Keys
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToGetRequestInformation(Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToGetRequestInformation(Action<RequestConfiguration<global::Sacloud.Sdk.KMS.Kms.Keys.KeysRequestBuilder.KeysRequestBuilderGetQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToGetRequestInformation(Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToGetRequestInformation(Action<RequestConfiguration<global::Sacloud.Sdk.KMS.Kms.Keys.KeysRequestBuilder.KeysRequestBuilderGetQueryParameters>> requestConfiguration = default)
         {
 #endif
             var requestInfo = new RequestInformation(Method.GET, UrlTemplate, PathParameters);
@@ -168,11 +169,11 @@ namespace Sacloud.Sdk.KMS.Kms.Keys
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Sacloud.Sdk.KMS.Models.WrappedCreateKey body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Sacloud.Sdk.KMS.Models.WrappedCreateKeyRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Sacloud.Sdk.KMS.Models.WrappedCreateKey body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Sacloud.Sdk.KMS.Models.WrappedCreateKeyRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
@@ -190,6 +191,16 @@ namespace Sacloud.Sdk.KMS.Kms.Keys
         public global::Sacloud.Sdk.KMS.Kms.Keys.KeysRequestBuilder WithUrl(string rawUrl)
         {
             return new global::Sacloud.Sdk.KMS.Kms.Keys.KeysRequestBuilder(rawUrl, RequestAdapter, _loggerFactory);
+        }
+        [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
+        #pragma warning disable CS1591
+        public partial class KeysRequestBuilderGetQueryParameters 
+        #pragma warning restore CS1591
+        {
+            /// <summary>Number of results to return per page.</summary>
+            public int? Count { get; set; }
+            /// <summary>The initial index from which to return the results.</summary>
+            public int? From { get; set; }
         }
     }
 }

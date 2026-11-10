@@ -103,7 +103,7 @@ public class DecryptRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new DecryptRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedKeyCipher();
+        var body = new WrappedDecryptionRequest();
 
         var requestInfo = builder.ToPostRequestInformation(body);
 
@@ -125,7 +125,7 @@ public class DecryptRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new DecryptRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedKeyCipher();
+        var body = new WrappedDecryptionRequest();
 
         var requestInfo = builder.ToPostRequestInformation(body);
 
@@ -336,7 +336,7 @@ public class DecryptRequestBuilderTests
             { pathParameterKey, pathParameterValue }
         };
         var builder = new DecryptRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedKeyCipher();
+        var body = new WrappedDecryptionRequest();
 
         var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
         {
@@ -395,7 +395,7 @@ public class DecryptRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new DecryptRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedKeyCipher
+        var body = new WrappedDecryptionRequest
         {
             Key = null
         };
@@ -422,9 +422,9 @@ public class DecryptRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new DecryptRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedKeyCipher
+        var body = new WrappedDecryptionRequest
         {
-            Key = new KeyCipher
+            Key = new DecryptionRequest
             {
                 Cipher = null
             }
@@ -439,13 +439,98 @@ public class DecryptRequestBuilderTests
     }
 
     /// <summary>
-    /// バリデーションを通過する有効なWrappedKeyCipherを作成するヘルパーメソッド
+    /// PostAsyncのリクエストボディのKey.Cipherが空文字の場合にValidationExceptionがスローされることを確認
     /// </summary>
-    private static WrappedKeyCipher CreateValidWrappedKeyCipher()
+    [Fact]
+    public async Task PostAsync_WithEmptyCipher_ThrowsValidationException()
     {
-        return new WrappedKeyCipher
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
         {
-            Key = new KeyCipher
+            { "baseurl", "https://api.example.com" },
+            { "resource_id", "test-resource-id" }
+        };
+        var builder = new DecryptRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new WrappedDecryptionRequest
+        {
+            Key = new DecryptionRequest
+            {
+                Cipher = string.Empty
+            }
+        };
+
+        var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
+        {
+            await builder.PostAsync(body);
+        });
+
+        Assert.Equal("Cipherが入力されていません。", exception.Message);
+    }
+
+    /// <summary>
+    /// PostAsyncのリクエストボディのKey.Cipherが3072文字の場合に許可されることを確認
+    /// </summary>
+    [Fact]
+    public async Task PostAsync_With3072CharacterCipher_IsAllowed()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" },
+            { "resource_id", "test-resource-id" }
+        };
+        var builder = new DecryptRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new WrappedDecryptionRequest
+        {
+            Key = new DecryptionRequest
+            {
+                Cipher = new string('a', 3072)
+            }
+        };
+
+        await builder.PostAsync(body);
+    }
+
+    /// <summary>
+    /// PostAsyncのリクエストボディのKey.Cipherが3073文字の場合にValidationExceptionがスローされることを確認
+    /// </summary>
+    [Fact]
+    public async Task PostAsync_With3073CharacterCipher_ThrowsValidationException()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" },
+            { "resource_id", "test-resource-id" }
+        };
+        var builder = new DecryptRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new WrappedDecryptionRequest
+        {
+            Key = new DecryptionRequest
+            {
+                Cipher = new string('a', 3073)
+            }
+        };
+
+        var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
+        {
+            await builder.PostAsync(body);
+        });
+
+        Assert.Equal("Cipherは3072文字以下で入力してください。", exception.Message);
+    }
+
+    /// <summary>
+    /// バリデーションを通過する有効なWrappedDecryptionRequestを作成するヘルパーメソッド
+    /// </summary>
+    private static WrappedDecryptionRequest CreateValidWrappedKeyCipher()
+    {
+        return new WrappedDecryptionRequest
+        {
+            Key = new DecryptionRequest
             {
                 Cipher = "test-cipher-data"
             }

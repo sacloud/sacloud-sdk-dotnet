@@ -45,7 +45,8 @@ public class WrappedKeyCipherTests
         var deserializers = model.GetFieldDeserializers();
 
         Assert.NotNull(deserializers);
-        Assert.Single(deserializers);
+        Assert.Equal(2, deserializers.Count);
+        Assert.True(deserializers.ContainsKey("is_ok"));
         Assert.True(deserializers.ContainsKey("Key"));
     }
 
@@ -69,6 +70,10 @@ public class WrappedKeyCipherTests
         var deserializers = model.GetFieldDeserializers();
         var parseNode = Substitute.For<IParseNode>();
 
+        parseNode.GetBoolValue().Returns(true);
+        deserializers["is_ok"](parseNode);
+        Assert.True(model.IsOk);
+
         var keyCipherObject = new KeyCipher { Cipher = "encrypted-data" };
         parseNode.GetObjectValue(Arg.Any<ParsableFactory<KeyCipher>>()).Returns(keyCipherObject);
         deserializers["Key"](parseNode);
@@ -84,6 +89,7 @@ public class WrappedKeyCipherTests
     {
         var originalModel = new WrappedKeyCipher
         {
+            IsOk = true,
             Key = new KeyCipher
             {
                 Cipher = "encrypted-cipher-content"
@@ -102,6 +108,7 @@ public class WrappedKeyCipherTests
         var deserializedModel = parseNode.GetObjectValue(WrappedKeyCipher.CreateFromDiscriminatorValue);
 
         Assert.NotNull(deserializedModel);
+        Assert.Equal(originalModel.IsOk, deserializedModel.IsOk);
         Assert.NotNull(deserializedModel.Key);
         Assert.Equal(originalModel.Key.Cipher, deserializedModel.Key.Cipher);
     }

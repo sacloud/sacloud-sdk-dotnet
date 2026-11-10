@@ -18,6 +18,8 @@ namespace Sacloud.Sdk.KMS.Models
         public int? Count { get; set; }
         /// <summary>The From property</summary>
         public int? From { get; set; }
+        /// <summary>The is_ok property</summary>
+        public bool? IsOk { get; set; }
         /// <summary>The Keys property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
@@ -55,6 +57,7 @@ namespace Sacloud.Sdk.KMS.Models
             {
                 { "Count", n => { Count = n.GetIntValue(); } },
                 { "From", n => { From = n.GetIntValue(); } },
+                { "is_ok", n => { IsOk = n.GetBoolValue(); } },
                 { "Keys", n => { Keys = n.GetCollectionOfObjectValues<global::Sacloud.Sdk.KMS.Models.Key>(global::Sacloud.Sdk.KMS.Models.Key.CreateFromDiscriminatorValue)?.AsList(); } },
                 { "Total", n => { Total = n.GetIntValue(); } },
             };
@@ -68,6 +71,7 @@ namespace Sacloud.Sdk.KMS.Models
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
             writer.WriteIntValue("Count", Count);
             writer.WriteIntValue("From", From);
+            writer.WriteBoolValue("is_ok", IsOk);
             writer.WriteCollectionOfObjectValues<global::Sacloud.Sdk.KMS.Models.Key>("Keys", Keys);
             writer.WriteIntValue("Total", Total);
             writer.WriteAdditionalData(AdditionalData);

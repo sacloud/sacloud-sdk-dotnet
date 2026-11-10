@@ -276,7 +276,7 @@ public class WithResource_ItemRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new WithResource_ItemRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedKey();
+        var body = new WrappedKeyRequest();
 
         var requestInfo = builder.ToPutRequestInformation(body);
 
@@ -298,7 +298,7 @@ public class WithResource_ItemRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new WithResource_ItemRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedKey();
+        var body = new WrappedKeyRequest();
 
         var requestInfo = builder.ToPutRequestInformation(body);
 
@@ -865,7 +865,7 @@ public class WithResource_ItemRequestBuilderTests
             { pathParameterKey, pathParameterValue }
         };
         var builder = new WithResource_ItemRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedKey();
+        var body = new WrappedKeyRequest();
 
         var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
         {
@@ -916,8 +916,6 @@ public class WithResource_ItemRequestBuilderTests
     [Theory]
     [InlineData("Key")]
     [InlineData("Key.Name")]
-    [InlineData("Key.Description")]
-    [InlineData("Key.Tags")]
     public async Task PutAsync_WithInvalidBodyParameters_ThrowsValidationException(string invalidParameterName)
     {
         var requestAdapter = Substitute.For<IRequestAdapter>();
@@ -929,13 +927,13 @@ public class WithResource_ItemRequestBuilderTests
         };
         var builder = new WithResource_ItemRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
 
-        var body = new WrappedKey
+        var body = new WrappedKeyRequest
         {
-            Key = new Key
+            Key = new KeyRequest
             {
                 Name = invalidParameterName == "Key.Name" ? string.Empty : "test-key-name",
-                Description = invalidParameterName == "Key.Description" ? string.Empty : "test-description",
-                Tags = invalidParameterName == "Key.Tags" ? null : new List<string> { "tag1" }
+                Description = "test-description",
+                Tags = new List<string> { "tag1" }
             }
         };
 
@@ -949,15 +947,18 @@ public class WithResource_ItemRequestBuilderTests
             await builder.PutAsync(body);
         });
 
-        Assert.Equal($"{invalidParameterName}が入力されていません。", exception.Message);
-        _mockLogger.Received(1).LogWarning($"{invalidParameterName}が入力されていません。");
+        var expectedMessage = invalidParameterName == "Key.Name"
+            ? "Key.Nameが入力されていません。"
+            : $"{invalidParameterName}が入力されていません。";
+        Assert.Equal(expectedMessage, exception.Message);
+        _mockLogger.Received(1).LogWarning(expectedMessage);
     }
 
     /// <summary>
     /// PutAsyncのリクエストボディのTagsが空配列の場合に例外がスローされることを確認
     /// </summary>
     [Fact]
-    public async Task PutAsync_WithEmptyTags_ThrowsValidationException()
+    public async Task PutAsync_WithEmptyTags_IsAllowed()
     {
         var requestAdapter = Substitute.For<IRequestAdapter>();
         requestAdapter.BaseUrl = "https://api.example.com";
@@ -968,9 +969,9 @@ public class WithResource_ItemRequestBuilderTests
         };
         var builder = new WithResource_ItemRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
 
-        var body = new WrappedKey
+        var body = new WrappedKeyRequest
         {
-            Key = new Key
+            Key = new KeyRequest
             {
                 Name = "test-key-name",
                 Description = "test-description",
@@ -978,25 +979,76 @@ public class WithResource_ItemRequestBuilderTests
             }
         };
 
+        await builder.PutAsync(body);
+    }
+
+    /// <summary>
+    /// PutAsyncのリクエストボディのKey.Tagsに空文字要素が含まれる場合にValidationExceptionがスローされることを確認
+    /// </summary>
+    [Fact]
+    public async Task PutAsync_WithEmptyTagElement_ThrowsValidationException()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" },
+            { "resource_id", "test-resource-id" }
+        };
+        var builder = new WithResource_ItemRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new WrappedKeyRequest
+        {
+            Key = new KeyRequest
+            {
+                Name = "test-key-name",
+                Tags = new List<string> { string.Empty }
+            }
+        };
+
         var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
         {
             await builder.PutAsync(body);
         });
 
-        Assert.Equal("Key.Tagsが入力されていません。", exception.Message);
-        _mockLogger.Received(1).Log(
-            LogLevel.Warning,
-            Arg.Any<EventId>(),
-            Arg.Is<object>(state => state.ToString() == "Key.Tagsが入力されていません。"),
-            null,
-            Arg.Any<Func<object, Exception?, string>>());
+        Assert.Equal("Key.Tagsの各要素は1文字以上で入力してください。", exception.Message);
+    }
+
+    /// <summary>
+    /// PutAsyncのリクエストボディのKey.Tagsにnull要素が含まれる場合にValidationExceptionがスローされることを確認
+    /// </summary>
+    [Fact]
+    public async Task PutAsync_WithNullTagElement_ThrowsValidationException()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" },
+            { "resource_id", "test-resource-id" }
+        };
+        var builder = new WithResource_ItemRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new WrappedKeyRequest
+        {
+            Key = new KeyRequest
+            {
+                Name = "test-key-name",
+                Tags = new List<string> { "tag", null! }
+            }
+        };
+
+        var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
+        {
+            await builder.PutAsync(body);
+        });
+
+        Assert.Equal("Key.Tagsの各要素はnullにできません。", exception.Message);
     }
 
     /// <summary>
     /// PutAsyncでKey.Descriptionが空の場合にValidationExceptionがスローされることを確認
     /// </summary>
     [Fact]
-    public async Task PutAsync_WithEmptyDescription_ThrowsValidationException()
+    public async Task PutAsync_WithEmptyDescription_IsAllowed()
     {
         var requestAdapter = Substitute.For<IRequestAdapter>();
         requestAdapter.BaseUrl = "https://api.example.com";
@@ -1007,9 +1059,9 @@ public class WithResource_ItemRequestBuilderTests
         };
         var builder = new WithResource_ItemRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
 
-        var body = new WrappedKey
+        var body = new WrappedKeyRequest
         {
-            Key = new Key
+            Key = new KeyRequest
             {
                 Name = "test-key-name",
                 Description = string.Empty,
@@ -1017,20 +1069,14 @@ public class WithResource_ItemRequestBuilderTests
             }
         };
 
-        var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
-        {
-            await builder.PutAsync(body);
-        });
-
-        Assert.Equal("Key.Descriptionが入力されていません。", exception.Message);
-        _mockLogger.Received(1).LogWarning("Key.Descriptionが入力されていません。");
+        await builder.PutAsync(body);
     }
 
     /// <summary>
     /// PutAsyncでKey.Descriptionがnullの場合にValidationExceptionがスローされることを確認
     /// </summary>
     [Fact]
-    public async Task PutAsync_WithNullDescription_ThrowsValidationException()
+    public async Task PutAsync_WithNullDescription_IsAllowed()
     {
         var requestAdapter = Substitute.For<IRequestAdapter>();
         requestAdapter.BaseUrl = "https://api.example.com";
@@ -1041,9 +1087,9 @@ public class WithResource_ItemRequestBuilderTests
         };
         var builder = new WithResource_ItemRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
 
-        var body = new WrappedKey
+        var body = new WrappedKeyRequest
         {
-            Key = new Key
+            Key = new KeyRequest
             {
                 Name = "test-key-name",
                 Description = null,
@@ -1051,13 +1097,7 @@ public class WithResource_ItemRequestBuilderTests
             }
         };
 
-        var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
-        {
-            await builder.PutAsync(body);
-        });
-
-        Assert.Equal("Key.Descriptionが入力されていません。", exception.Message);
-        _mockLogger.Received(1).LogWarning("Key.Descriptionが入力されていません。");
+        await builder.PutAsync(body);
     }
 
     /// <summary>
@@ -1075,9 +1115,9 @@ public class WithResource_ItemRequestBuilderTests
         };
         var builder = new WithResource_ItemRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
 
-        var body = new WrappedKey
+        var body = new WrappedKeyRequest
         {
-            Key = new Key
+            Key = new KeyRequest
             {
                 Name = string.Empty,
                 Description = "test-description",
@@ -1109,9 +1149,9 @@ public class WithResource_ItemRequestBuilderTests
         };
         var builder = new WithResource_ItemRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
 
-        var body = new WrappedKey
+        var body = new WrappedKeyRequest
         {
-            Key = new Key
+            Key = new KeyRequest
             {
                 Name = null,
                 Description = "test-description",
@@ -1144,9 +1184,9 @@ public class WithResource_ItemRequestBuilderTests
         var builder = new WithResource_ItemRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
 
         var tooLongName = new string('a', 256);
-        var body = new WrappedKey
+        var body = new WrappedKeyRequest
         {
-            Key = new Key
+            Key = new KeyRequest
             {
                 Name = tooLongName,
                 Description = "test-description",
@@ -1166,11 +1206,11 @@ public class WithResource_ItemRequestBuilderTests
     /// <summary>
     /// バリデーションを通過する有効なWrappedKeyを作成するヘルパーメソッド
     /// </summary>
-    private static WrappedKey CreateValidWrappedKey()
+    private static WrappedKeyRequest CreateValidWrappedKey()
     {
-        return new WrappedKey
+        return new WrappedKeyRequest
         {
-            Key = new Key
+            Key = new KeyRequest
             {
                 Name = "test-key-name",
                 Description = "test-description",

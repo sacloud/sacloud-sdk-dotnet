@@ -103,7 +103,7 @@ public class EncryptRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new EncryptRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedKeyPlain();
+        var body = new WrappedEncryptionRequest();
 
         var requestInfo = builder.ToPostRequestInformation(body);
 
@@ -125,7 +125,7 @@ public class EncryptRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new EncryptRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedKeyPlain();
+        var body = new WrappedEncryptionRequest();
 
         var requestInfo = builder.ToPostRequestInformation(body);
 
@@ -336,7 +336,7 @@ public class EncryptRequestBuilderTests
             { pathParameterKey, pathParameterValue }
         };
         var builder = new EncryptRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedKeyPlain();
+        var body = new WrappedEncryptionRequest();
 
         var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
         {
@@ -395,7 +395,7 @@ public class EncryptRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new EncryptRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedKeyPlain
+        var body = new WrappedEncryptionRequest
         {
             Key = null
         };
@@ -422,9 +422,9 @@ public class EncryptRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new EncryptRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedKeyPlain
+        var body = new WrappedEncryptionRequest
         {
-            Key = new KeyPlain
+            Key = new EncryptionRequest
             {
                 Plain = null
             }
@@ -452,12 +452,12 @@ public class EncryptRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new EncryptRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedKeyPlain
+        var body = new WrappedEncryptionRequest
         {
-            Key = new KeyPlain
+            Key = new EncryptionRequest
             {
                 Plain = "test-plain-data",
-                Algo = (KeyEncryptAlgoEnum)999
+                Algo = (EncryptionRequest_Algo)999
             }
         };
 
@@ -476,13 +476,13 @@ public class EncryptRequestBuilderTests
     }
 
     /// <summary>
-    /// バリデーションを通過する有効なWrappedKeyPlainを作成するヘルパーメソッド
+    /// バリデーションを通過する有効なWrappedEncryptionRequestを作成するヘルパーメソッド
     /// </summary>
-    private static WrappedKeyPlain CreateValidWrappedKeyPlain()
+    private static WrappedEncryptionRequest CreateValidWrappedKeyPlain()
     {
-        return new WrappedKeyPlain
+        return new WrappedEncryptionRequest
         {
-            Key = new KeyPlain
+            Key = new EncryptionRequest
             {
                 Plain = "test-plain-data"
             }

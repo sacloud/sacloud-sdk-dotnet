@@ -103,7 +103,7 @@ public class StatusRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new StatusRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedChangeKeyStatus();
+        var body = new WrappedChangeKeyStateRequest();
 
         var requestInfo = builder.ToPostRequestInformation(body);
 
@@ -166,9 +166,10 @@ public class StatusRequestBuilderTests
         };
         var builder = new StatusRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
         var body = CreateValidWrappedChangeKeyStatus();
-        var expectedResult = new MemoryStream();
-        requestAdapter.SendPrimitiveAsync<Stream>(
+        var expectedResult = new WrappedChangeKeyState();
+        requestAdapter.SendAsync<WrappedChangeKeyState>(
             Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<WrappedChangeKeyState>>(),
             Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
             Arg.Any<CancellationToken>())
             .Returns(expectedResult);
@@ -194,9 +195,10 @@ public class StatusRequestBuilderTests
         };
         var builder = new StatusRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
         var body = CreateValidWrappedChangeKeyStatus();
-        var expectedResult = new MemoryStream();
-        requestAdapter.SendPrimitiveAsync<Stream>(
+        var expectedResult = new WrappedChangeKeyState();
+        requestAdapter.SendAsync<WrappedChangeKeyState>(
             Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<WrappedChangeKeyState>>(),
             Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
             Arg.Any<CancellationToken>())
             .Returns(expectedResult);
@@ -240,8 +242,9 @@ public class StatusRequestBuilderTests
         var body = CreateValidWrappedChangeKeyStatus();
         var expectedException = new ApiError { ResponseStatusCode = 400 };
 
-        requestAdapter.SendPrimitiveAsync<Stream>(
+        requestAdapter.SendAsync<WrappedChangeKeyState>(
             Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<WrappedChangeKeyState>>(),
             Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
             Arg.Any<CancellationToken>()
         ).ThrowsAsync(expectedException);
@@ -273,8 +276,9 @@ public class StatusRequestBuilderTests
         var body = CreateValidWrappedChangeKeyStatus();
         var expectedException = new Exception("Test error");
 
-        requestAdapter.SendPrimitiveAsync<Stream>(
+        requestAdapter.SendAsync<WrappedChangeKeyState>(
             Arg.Any<RequestInformation>(),
+            Arg.Any<ParsableFactory<WrappedChangeKeyState>>(),
             Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
             Arg.Any<CancellationToken>()
         ).ThrowsAsync(expectedException);
@@ -310,7 +314,7 @@ public class StatusRequestBuilderTests
             { pathParameterKey, pathParameterValue }
         };
         var builder = new StatusRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedChangeKeyStatus();
+        var body = new WrappedChangeKeyStateRequest();
 
         var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
         {
@@ -369,7 +373,7 @@ public class StatusRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new StatusRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedChangeKeyStatus
+        var body = new WrappedChangeKeyStateRequest
         {
             Key = null
         };
@@ -380,6 +384,36 @@ public class StatusRequestBuilderTests
         });
 
         Assert.Equal("Keyが入力されていません。", exception.Message);
+    }
+
+    /// <summary>
+    /// PostAsyncのリクエストボディのStatusがnullの場合にValidationExceptionがスローされることを確認
+    /// </summary>
+    [Fact]
+    public async Task PostAsync_WithNullStatus_ThrowsValidationException()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" },
+            { "resource_id", "test-resource-id" }
+        };
+        var builder = new StatusRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new WrappedChangeKeyStateRequest
+        {
+            Key = new ChangeKeyStateRequest
+            {
+                Status = null
+            }
+        };
+
+        var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
+        {
+            await builder.PostAsync(body);
+        });
+
+        Assert.Equal("Statusが入力されていません。", exception.Message);
     }
 
     /// <summary>
@@ -396,11 +430,11 @@ public class StatusRequestBuilderTests
             { "resource_id", "test-resource-id" }
         };
         var builder = new StatusRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedChangeKeyStatus
+        var body = new WrappedChangeKeyStateRequest
         {
-            Key = new ChangeKeyStatus
+            Key = new ChangeKeyStateRequest
             {
-                Status = (ChangeKeyStatus_Status)999
+                Status = (ChangeKeyStateRequest_Status)999
             }
         };
 
@@ -421,11 +455,14 @@ public class StatusRequestBuilderTests
     /// <summary>
     /// バリデーションを通過する有効なWrappedChangeKeyStatusを作成するヘルパーメソッド
     /// </summary>
-    private static WrappedChangeKeyStatus CreateValidWrappedChangeKeyStatus()
+    private static WrappedChangeKeyStateRequest CreateValidWrappedChangeKeyStatus()
     {
-        return new WrappedChangeKeyStatus
+        return new WrappedChangeKeyStateRequest
         {
-            Key = new ChangeKeyStatus()
+            Key = new ChangeKeyStateRequest
+            {
+                Status = ChangeKeyStateRequest_Status.Active
+            }
         };
     }
 }

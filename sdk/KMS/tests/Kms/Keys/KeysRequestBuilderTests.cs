@@ -181,7 +181,7 @@ public class KeysRequestBuilderTests
             { "baseurl", "https://api.example.com" }
         };
         var builder = new KeysRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedCreateKey();
+        var body = new WrappedCreateKeyRequest();
 
         var requestInfo = builder.ToPostRequestInformation(body);
 
@@ -202,7 +202,7 @@ public class KeysRequestBuilderTests
             { "baseurl", "https://api.example.com" }
         };
         var builder = new KeysRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedCreateKey();
+        var body = new WrappedCreateKeyRequest();
 
         var requestInfo = builder.ToPostRequestInformation(body);
 
@@ -289,10 +289,10 @@ public class KeysRequestBuilderTests
         };
         var builder = new KeysRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
         var body = CreateValidWrappedCreateKey();
-        var expectedResult = new WrappedCreateKey();
+        var expectedResult = new WrappedCreateKeyResponse();
         requestAdapter.SendAsync(
             Arg.Any<RequestInformation>(),
-            Arg.Any<ParsableFactory<WrappedCreateKey>>(),
+            Arg.Any<ParsableFactory<WrappedCreateKeyResponse>>(),
             Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
             Arg.Any<CancellationToken>())
             .Returns(expectedResult);
@@ -447,21 +447,23 @@ public class KeysRequestBuilderTests
         };
         var builder = new KeysRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
         var body = CreateValidWrappedCreateKey();
-        var expectedResponse = new WrappedCreateKey();
+        var expectedResponse = new WrappedCreateKeyResponse();
 
-        requestAdapter.SendAsync<WrappedCreateKey>(
+        requestAdapter.SendAsync<WrappedCreateKeyResponse>(
             Arg.Any<RequestInformation>(),
-            Arg.Any<ParsableFactory<WrappedCreateKey>>(),
+            Arg.Any<ParsableFactory<WrappedCreateKeyResponse>>(),
             Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
             Arg.Any<CancellationToken>()
         ).Returns(expectedResponse);
 
         var result = await builder.PostAsync(body);
 
-        await requestAdapter.Received(1).SendAsync<WrappedCreateKey>(
+        await requestAdapter.Received(1).SendAsync<WrappedCreateKeyResponse>(
             Arg.Any<RequestInformation>(),
-            Arg.Any<ParsableFactory<WrappedCreateKey>>(),
-            Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
+            Arg.Any<ParsableFactory<WrappedCreateKeyResponse>>(),
+            Arg.Is<Dictionary<string, ParsableFactory<IParsable>>>(errorMapping =>
+                errorMapping.ContainsKey("XXX") &&
+                errorMapping["XXX"] == (ParsableFactory<IParsable>)ApiError.CreateFromDiscriminatorValue),
             Arg.Any<CancellationToken>()
         );
         Assert.Equal(expectedResponse, result);
@@ -504,9 +506,9 @@ public class KeysRequestBuilderTests
             ResponseStatusCode = 400
         };
 
-        requestAdapter.SendAsync<WrappedCreateKey>(
+        requestAdapter.SendAsync<WrappedCreateKeyResponse>(
             Arg.Any<RequestInformation>(),
-            Arg.Any<ParsableFactory<WrappedCreateKey>>(),
+            Arg.Any<ParsableFactory<WrappedCreateKeyResponse>>(),
             Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
             Arg.Any<CancellationToken>()
         ).ThrowsAsync(expectedException);
@@ -541,9 +543,9 @@ public class KeysRequestBuilderTests
         var body = CreateValidWrappedCreateKey();
         var expectedException = new Exception("Test error");
 
-        requestAdapter.SendAsync<WrappedCreateKey>(
+        requestAdapter.SendAsync<WrappedCreateKeyResponse>(
             Arg.Any<RequestInformation>(),
-            Arg.Any<ParsableFactory<WrappedCreateKey>>(),
+            Arg.Any<ParsableFactory<WrappedCreateKeyResponse>>(),
             Arg.Any<Dictionary<string, ParsableFactory<IParsable>>>(),
             Arg.Any<CancellationToken>()
         ).ThrowsAsync(expectedException);
@@ -605,7 +607,7 @@ public class KeysRequestBuilderTests
             { "baseurl", "https://api.example.com" }
         };
         var builder = new KeysRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedCreateKey
+        var body = new WrappedCreateKeyRequest
         {
             Key = null
         };
@@ -631,9 +633,9 @@ public class KeysRequestBuilderTests
             { "baseurl", "https://api.example.com" }
         };
         var builder = new KeysRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedCreateKey
+        var body = new WrappedCreateKeyRequest
         {
-            Key = new CreateKey
+            Key = new CreateKeyRequest
             {
                 Name = null
             }
@@ -660,9 +662,9 @@ public class KeysRequestBuilderTests
             { "baseurl", "https://api.example.com" }
         };
         var builder = new KeysRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
-        var body = new WrappedCreateKey
+        var body = new WrappedCreateKeyRequest
         {
-            Key = new CreateKey
+            Key = new CreateKeyRequest
             {
                 Name = new string('a', 256)
             }
@@ -677,13 +679,103 @@ public class KeysRequestBuilderTests
     }
 
     /// <summary>
+    /// PostAsyncのリクエストボディのKey.PlainKeyが空文字の場合に例外がスローされることを確認
+    /// </summary>
+    [Fact]
+    public async Task PostAsync_WithEmptyPlainKey_ThrowsValidationException()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new KeysRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new WrappedCreateKeyRequest
+        {
+            Key = new CreateKeyRequest
+            {
+                Name = "test-key-name",
+                PlainKey = string.Empty
+            }
+        };
+
+        var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
+        {
+            await builder.PostAsync(body);
+        });
+
+        Assert.Equal("PlainKeyは1文字以上で入力してください。", exception.Message);
+    }
+
+    /// <summary>
+    /// PostAsyncのリクエストボディのKey.Tagsに空文字要素が含まれる場合にValidationExceptionがスローされることを確認
+    /// </summary>
+    [Fact]
+    public async Task PostAsync_WithEmptyTagElement_ThrowsValidationException()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new KeysRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new WrappedCreateKeyRequest
+        {
+            Key = new CreateKeyRequest
+            {
+                Name = "test-key-name",
+                Tags = new List<string> { string.Empty }
+            }
+        };
+
+        var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
+        {
+            await builder.PostAsync(body);
+        });
+
+        Assert.Equal("Tagsの各要素は1文字以上で入力してください。", exception.Message);
+    }
+
+    /// <summary>
+    /// PostAsyncのリクエストボディのKey.Tagsにnull要素が含まれる場合にValidationExceptionがスローされることを確認
+    /// </summary>
+    [Fact]
+    public async Task PostAsync_WithNullTagElement_ThrowsValidationException()
+    {
+        var requestAdapter = Substitute.For<IRequestAdapter>();
+        requestAdapter.BaseUrl = "https://api.example.com";
+        var pathParameters = new Dictionary<string, object>
+        {
+            { "baseurl", "https://api.example.com" }
+        };
+        var builder = new KeysRequestBuilder(pathParameters, requestAdapter, _mockLoggerFactory);
+        var body = new WrappedCreateKeyRequest
+        {
+            Key = new CreateKeyRequest
+            {
+                Name = "test-key-name",
+                Tags = new List<string> { "tag", null! }
+            }
+        };
+
+        var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
+        {
+            await builder.PostAsync(body);
+        });
+
+        Assert.Equal("Tagsの各要素はnullにできません。", exception.Message);
+    }
+
+    /// <summary>
     /// バリデーションを通過する有効なWrappedCreateKeyを作成するヘルパーメソッド
     /// </summary>
-    private static WrappedCreateKey CreateValidWrappedCreateKey()
+    private static WrappedCreateKeyRequest CreateValidWrappedCreateKey()
     {
-        return new WrappedCreateKey
+        return new WrappedCreateKeyRequest
         {
-            Key = new CreateKey
+            Key = new CreateKeyRequest
             {
                 Name = "test-key-name"
             }
